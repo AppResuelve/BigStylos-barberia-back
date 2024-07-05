@@ -1,34 +1,55 @@
 const Services = require("../../DB/models/Services");
 const User = require("../../DB/models/User");
 
-const deleteServicesController = async (service) => {
-
+const deleteServicesController = async (service, category) => {
   try {
+    const lowerCaseService = service.toLowerCase();
+    const lowerCaseCategory = category.toLowerCase();
+
     // Buscar el servicio en la base de datos
-    const existingService = await Services.findOne();
-    if (existingService) {
-      // Si el servicio existe, eliminarlo de la propiedad allServices
-      existingService.allServices = existingService.allServices.filter(
-        (arr) => arr[0] !== service
-      );
+    const existingServiceDoc = await Services.findOne({});
+    if (existingServiceDoc) {
+      // Verificar si la categoría y el servicio existen
+      if (
+        existingServiceDoc.services[lowerCaseCategory] &&
+        existingServiceDoc.services[lowerCaseCategory][lowerCaseService]
+      ) {
+        // Eliminar el servicio de la categoría
+        delete existingServiceDoc.services[lowerCaseCategory][lowerCaseService];
 
-      // Eliminar la propiedad del campo services de todos los usuarios
-      await User.updateMany(
-        {},
-        {
-          $unset: {
-            [`services.${service}`]: 1,
-          },
+        // Si la categoría queda vacía, eliminar también la categoría
+        if (
+          Object.keys(existingServiceDoc.services[lowerCaseCategory]).length ===
+          0
+        ) {
+          delete existingServiceDoc.services[lowerCaseCategory];
         }
-      );
 
-      // Guardar la actualización en la base de datos
-      await existingService.save();
+        existingServiceDoc.markModified("services");
 
-      return existingService; // Devolver el servicio actualizado
+        // Eliminar la propiedad del campo services de todos los usuarios
+        await User.updateMany(
+          {},
+          {
+            $unset: {
+              [`services.${lowerCaseCategory}.${lowerCaseService}`]: 1,
+            },
+          }
+        );
+
+        // Guardar la actualización en la base de datos
+        await existingServiceDoc.save();
+
+        return existingServiceDoc; // Devolver el servicio actualizado
+      } else {
+        // Si la categoría o el servicio no existen, retornar un mensaje indicando que no existe
+        return {
+          message: "El servicio no existe en la categoría especificada.",
+        };
+      }
     } else {
-      // Si el servicio no existe, retornar un mensaje indicando que no existe
-      return { message: "El servicio no existe en la colección." };
+      // Si no existe el documento de servicios, retornar un mensaje indicando que no existe
+      return { message: "No existen servicios en la colección." };
     }
   } catch (error) {
     console.error("Error al eliminar el servicio:", error);
@@ -37,4 +58,3 @@ const deleteServicesController = async (service) => {
 };
 
 module.exports = deleteServicesController;
-

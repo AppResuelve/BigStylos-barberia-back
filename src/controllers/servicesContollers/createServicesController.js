@@ -1,69 +1,68 @@
 const Services = require("../../DB/models/Services");
 const User = require("../../DB/models/User");
 
-const createServicesController = async (service) => {
-  const lowerCase = [service[0].toLocaleLowerCase()]
+const createServicesController = async (service, category, price, sing) => {
   try {
-    // Buscar el primer documento en la colección de servicios
-    const existingService = await Services.findOne({});
+    const lowerCaseService = service.toLowerCase();
+    const lowerCaseCategory = category.toLowerCase();
     
-    if (existingService) {
-      const isServiceIncluded = existingService.allServices.some(
-        (arr) => JSON.stringify(arr) === JSON.stringify(lowerCase)
-      );
-
-      if (isServiceIncluded) {
-        // Si el servicio ya existe, retornar un mensaje indicando que ya existe
-        return {
-          message: "El servicio ya existe en la colección.",
-          existingService,
-        };
-      } else {
-        // Si no existe, agregar el nuevo servicio a la propiedad allServices
-        existingService.allServices.push(lowerCase);
-
-        // Actualizar el campo services de los usuarios
-        await User.updateMany(
-          {},
-          {
-            $set: {
-              [`services.${lowerCase}`]: {
-                duration: null,
-                available: false,
-              },
-            },
+    // Buscar el primer documento en la colección de servicios
+    let existingServiceDoc = await Services.findOne({});
+    if (!existingServiceDoc) {
+      // Si no existe, crear un nuevo documento con la nueva categoría y servicio
+      existingServiceDoc = new Services({
+        services: {
+          [lowerCaseCategory]: {
+            [lowerCaseService]: {
+              price,
+              sing,
+            }
           }
-        );
-
-        // Guardar la actualización en la base de datos
-        await existingService.save();
-
-        return existingService;
-      }
-    } else {
-      // Si no existe, crear un nuevo documento con el nuevo servicio
-      const newService = new Services({
-        allServices: [lowerCase],
+        }
       });
 
-      // Actualizar el campo services de los usuarios
-      await User.updateMany(
-        {},
-        {
-          $set: {
-            [`services.${lowerCase}`]: {
-              duration: null,
-              available: true,
-            },
-          },
-        }
-      );
+      // Guardar el nuevo documento en la base de datos
+      await existingServiceDoc.save();
 
-      // Guardar el nuevo servicio en la base de datos
+      return existingServiceDoc;
+    }
 
-      await newService.save();
+    // Verificar si la categoría ya existe
+    if (existingServiceDoc.services[lowerCaseCategory]) {
+      const categoryObj = existingServiceDoc.services[lowerCaseCategory];
 
-      return newService;
+      // Verificar si el servicio ya existe en la categoría
+      if (categoryObj[lowerCaseService]) {
+        return {
+          message: "El servicio ya existe en la categoría.",
+        };
+      } else {
+        // Si no existe, agregar el nuevo servicio a la categoría existente
+       categoryObj[lowerCaseService] = {
+         price,
+         sing,
+       };
+        existingServiceDoc.markModified("services");
+
+        // Guardar la actualización en la base de datos
+        await existingServiceDoc.save();
+
+        return existingServiceDoc;
+      }
+    } else {
+      // Si la categoría no existe, crear la nueva categoría con el servicio
+      existingServiceDoc.services[lowerCaseCategory] = {
+        [lowerCaseService]: {
+          price,
+          sing,
+        },
+      };
+      existingServiceDoc.markModified("services");
+
+      // Guardar la actualización en la base de datos
+      await existingServiceDoc.save();
+
+      return existingServiceDoc;
     }
   } catch (error) {
     console.error("Error al crear o actualizar el servicio:", error);

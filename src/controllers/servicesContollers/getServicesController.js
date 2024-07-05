@@ -2,16 +2,16 @@ const Services = require("../../DB/models/Services");
 
 const getServicesController = async () => {
   try {
-    // Obtener todos los servicios desde la base de datos
-    const services = await Services.find();
-    if (services.length < 1) {
-      return services;
+    // Obtener el documento de servicios desde la base de datos
+    const servicesDoc = await Services.findOne({});
+    if (!servicesDoc) {
+      return { message: "No se encontraron servicios en la base de datos." };
     } else {
-      return services[0].allServices;
+      return servicesDoc.services;
     }
   } catch (error) {
     console.error("Error al obtener servicios:", error);
-    throw error;
+    throw new Error("Error al obtener servicios");
   }
 };
 

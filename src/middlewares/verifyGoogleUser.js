@@ -19,6 +19,7 @@ const verifyGoogleUser = async (req, res, next) => {
       audience:
         "75961716499-7v8lchvq0ahu3ukknidea4lb428l730v.apps.googleusercontent.com",
     });
+
     const payload = ticket.getPayload();
     if (payload) {
       req.headers["x-google-payload"] = JSON.stringify(payload); // Agregar el payload a los headers

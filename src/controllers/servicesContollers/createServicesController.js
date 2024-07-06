@@ -8,6 +8,8 @@ const createServicesController = async (service, category, price, sing) => {
     
     // Buscar el primer documento en la colección de servicios
     let existingServiceDoc = await Services.findOne({});
+    var users = await User.find()
+
     if (!existingServiceDoc) {
       // Si no existe, crear un nuevo documento con la nueva categoría y servicio
       existingServiceDoc = new Services({
@@ -20,6 +22,7 @@ const createServicesController = async (service, category, price, sing) => {
           }
         }
       });
+      
 
       // Guardar el nuevo documento en la base de datos
       await existingServiceDoc.save();
@@ -38,7 +41,7 @@ const createServicesController = async (service, category, price, sing) => {
         };
       } else {
         // Si no existe, agregar el nuevo servicio a la categoría existente
-       categoryObj[lowerCaseService] = {
+       existingServiceDoc[lowerCaseService] = {
          price,
          sing,
        };
@@ -64,6 +67,7 @@ const createServicesController = async (service, category, price, sing) => {
 
       return existingServiceDoc;
     }
+
   } catch (error) {
     console.error("Error al crear o actualizar el servicio:", error);
     throw new Error("Error al crear o actualizar el servicio");

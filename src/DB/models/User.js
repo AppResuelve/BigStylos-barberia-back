@@ -26,6 +26,7 @@ const UserSchema = new Schema(
     services: {
       type: Object,
       required: true,
+      default: {},
     },
     isDelete: {
       type: Boolean,

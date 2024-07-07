@@ -34,13 +34,18 @@ const createGoogleUserController = async (name, email, image) => {
       });
 
       const existingServiceDoc = await Services.findOne({});
+      console.log(existingServiceDoc.services, 'esto muestra al acceder a services')
+      console.log(existingServiceDoc.services.hombre, 'esto es lo que trae dentro de hombre')
 
       if (existingServiceDoc && existingServiceDoc.services) {
         const servicesObject = {};
 
         for (const category in existingServiceDoc.services) {
-          for (const service of existingServiceDoc.services[category]) {
-            servicesObject[service.name] = { duration: null, available: false };
+          const categoryServices = existingServiceDoc.services[category];
+          if (typeof categoryServices === 'object' && categoryServices !== null) {
+            for (const service in categoryServices) {
+              servicesObject[service] = { duration: null, available: false };
+            }
           }
         }
 

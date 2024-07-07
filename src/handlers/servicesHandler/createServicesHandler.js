@@ -1,7 +1,7 @@
 const createServicesController = require("../../controllers/servicesContollers/createServicesController");
 
 const createServicesHandler = async (req, res) => {
-    const { service, category, price, sing } = req.body;
+    const { service, category, price, sing, type } = req.body;
     console.log(service, "esto es lo que encuentra"); 
 
   try {
@@ -9,7 +9,8 @@ const createServicesHandler = async (req, res) => {
       service,
       category,
       price,
-      sing
+      sing,
+      type
     );
 
     // if (result.message) {

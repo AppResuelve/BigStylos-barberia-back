@@ -3,8 +3,9 @@ const createGoogleUserController = require("../../controllers/userControllers/cr
 const createGoogleUserHandler = async (req, res) => {
   try {
     const googlePayload = JSON.parse(req.headers["x-google-payload"]); // Obtener el payload de los headers
-    console.log(googlePayload, "en el handler en gogole paylouasd");
+      console.log('linea 6 handler google')
     if (googlePayload) {
+      console.log('si tengo el googlePayload')
       const { name, picture, email } = googlePayload;
       const newGoogleUser = await createGoogleUserController(
         name,

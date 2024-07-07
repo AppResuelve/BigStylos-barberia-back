@@ -26,6 +26,7 @@ const UserSchema = new Schema(
     services: {
       type: Object,
       required: true,
+      default: {},
     },
     isDelete: {
       type: Boolean,
@@ -38,6 +39,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
+    minimize: false,
   }
 );
 

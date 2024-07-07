@@ -1,13 +1,9 @@
 const User = require("../../DB/models/User");
-
 const Services = require("../../DB/models/Services");
 
 const createGoogleUserController = async (name, email, image) => {
   try {
-    const existingGoogleUser = await User.findOne({
-      where: { email: email },
-    });
-  console.log(existingGoogleUser, "esto es lo que encuentra");
+    const existingGoogleUser = await User.findOne({ email: email });
 
     if (existingGoogleUser) {
       existingGoogleUser.image = image;
@@ -34,21 +30,25 @@ const createGoogleUserController = async (name, email, image) => {
         worker: false,
         isDelete: false,
         phone: "",
-        services: {},
+        services: {}, // Inicializa con un objeto vacío
       });
 
-      const existingServiceDoc = await Services.findOne({}); // trae array de strings con servicios
-      // Crear el objeto de servicios para el nuevo usuario con solo los servicios
+      const existingServiceDoc = await Services.findOne({});
+      console.log(existingServiceDoc.services, 'esto muestra al acceder a services')
+      console.log(existingServiceDoc.services.hombre, 'esto es lo que trae dentro de hombre')
+
       if (existingServiceDoc && existingServiceDoc.services) {
         const servicesObject = {};
 
         for (const category in existingServiceDoc.services) {
-          for (const service in existingServiceDoc.services[category]) {
-            servicesObject[service] = { duration: null, available: false };
+          const categoryServices = existingServiceDoc.services[category];
+          if (typeof categoryServices === 'object' && categoryServices !== null) {
+            for (const service in categoryServices) {
+              servicesObject[service] = { duration: null, available: false };
+            }
           }
         }
 
-        // Establecer las propiedades de services para el nuevo usuario
         newGoogleUser.services = servicesObject;
       }
 

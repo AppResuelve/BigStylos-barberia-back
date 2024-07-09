@@ -29,13 +29,16 @@ const createServicesController = async (service, category, price, sing, type) =>
       await existingServiceDoc.save();
       isServiceAdded = true;
     } else {
-      console.log('entra si ya existe la propiedad services');
+      // Entrará al if solo si los servicios en DB son distintos a un objeto vacío
+      if (Object.keys(existingServiceDoc.services).length > 0) {
+        for (let category in existingServiceDoc.services) {
+          if (existingServiceDoc.services[category][lowerCaseService]) {
+            throw new Error("El servicio ya existe"); // Si el servicio existe en alguna categoría retorna
+          }
+        }
 
-      if (existingServiceDoc.services[lowerCaseCategory]) {  //existe la categoria
-        if (existingServiceDoc.services[lowerCaseCategory][lowerCaseService]) {
-          throw new Error("El servicio ya existe en la categoria");
-        } else {
-          console.log('entra si existe la categoria pero no el servicio');
+        // Si no se encontró el servicio en ninguna categoría, procede a agregarlo
+        if (existingServiceDoc.services[lowerCaseCategory]) {  // Existe la categoría
           // Agregar el nuevo servicio a la categoría existente sin sobrescribir los existentes
           existingServiceDoc.services[lowerCaseCategory][lowerCaseService] = {
             price,
@@ -43,21 +46,20 @@ const createServicesController = async (service, category, price, sing, type) =>
             type
           };
           isServiceAdded = true;
+        } else {
+          // Crear la nueva categoría con el nuevo servicio
+          existingServiceDoc.services[lowerCaseCategory] = {
+            [lowerCaseService]: {
+              price,
+              sing,
+              type
+            }
+          };
+          isServiceAdded = true;
         }
-      } else {
-        console.log('si no existe categoria ni servicio');
-        // Crear la nueva categoría con el nuevo servicio
-        existingServiceDoc.services[lowerCaseCategory] = {
-          [lowerCaseService]: {
-            price,
-            sing,
-            type
-          }
-        };
-        isServiceAdded = true;
+        existingServiceDoc.markModified("services");
+        await existingServiceDoc.save();
       }
-      existingServiceDoc.markModified("services");
-      await existingServiceDoc.save();
     }
 
     // Solo si se ha añadido el servicio, actualizar la propiedad services de cada usuario

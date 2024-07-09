@@ -64,16 +64,21 @@ const createServicesController = async (service, category, price, sing, type) =>
 
     // Solo si se ha añadido el servicio, actualizar la propiedad services de cada usuario
     if (isServiceAdded) {
-      const users = await User.find();
-      for (const user of users) {
+      console.log('entramos en la edicion de usuarios');
+      var users = await User.find();
+      
+      for (var user of users) {
         if (!user.services) {
           user.services = {};
         }
-        user.services[lowerCaseService] = {
-          duration: null,
-          available: false
-        };
-        await user.save();
+        if (!user.services[lowerCaseService]) {
+          user.services[lowerCaseService] = {
+            duration: null,
+            available: false
+          };
+          user.markModified("services");
+          await user.save();
+        }
       }
     }
 

@@ -1,28 +1,27 @@
 const Services = require("../../DB/models/Services");
 
-const updateServicesImgController = async (service, img) => {
+const updateServicesImgController = async (servicesWithImg) => {
   try {
     // Buscar el primer documento en la colección de servicios
     const existingService = await Services.findOne({});
 
-    if (existingService) {
+    if (existingService && Object.keys(existingService.services).length > 0) {
       // Actualizar la propiedad allServices con el nuevo array de arrays
-      existingService.allServices = servicesWithImg;
-
+      for (let i = 0; i < servicesWithImg.length; i++) {
+        for (let category in existingService.services) {
+          if (existingService.services[category][servicesWithImg[i][0]]) {
+            existingService.services[category][servicesWithImg[i][0]].img =
+              servicesWithImg[i][1];
+          }
+        }
+      }
+      existingService.markModified("services");
       // Guardar la actualización en la base de datos
       await existingService.save();
 
       return existingService; // Devolver el servicio actualizado
     } else {
-      // Si no existe, crear un nuevo documento con el nuevo array de arrays
-      const newService = new Services({
-        allServices: servicesWithImg,
-      });
-
-      // Guardar el nuevo servicio en la base de datos
-      await newService.save();
-
-      return newService;
+      throw new Error("No se encontraron servicios");
     }
   } catch (error) {
     console.error("Error al actualizar el servicio con imágenes:", error);

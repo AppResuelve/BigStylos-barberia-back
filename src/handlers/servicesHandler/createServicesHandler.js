@@ -2,7 +2,6 @@ const createServicesController = require("../../controllers/servicesContollers/c
 
 const createServicesHandler = async (req, res) => {
     const { service, category, price, sing, type } = req.body;
-    console.log(service, "esto es lo que encuentra"); 
 
   try {
     const result = await createServicesController(

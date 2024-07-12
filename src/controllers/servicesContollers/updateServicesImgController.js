@@ -1,6 +1,6 @@
 const Services = require("../../DB/models/Services");
 
-const updateServicesImgController = async (servicesWithImg) => {
+const updateServicesImgController = async (service, img) => {
   try {
     // Buscar el primer documento en la colección de servicios
     const existingService = await Services.findOne({});

@@ -4,7 +4,11 @@ const User = require("../../DB/models/User");
 const whoIsComingController = async (emailWorker, month, day) => {
   try {
     const workdays = await WorkDay.findOne({ email: emailWorker, month, day });
-
+    if (!workdays) {
+      const error = new Error("No se encontraron días creados");
+      error.statusCode = 400;
+      throw error;
+    }
     var objTurns = [];
     var arrayEmails = [];
     var result = [];

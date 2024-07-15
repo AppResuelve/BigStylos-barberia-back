@@ -8,6 +8,8 @@
 //   console.log(`Server listening on port: ${PORT}`);
 // });
 
+/* ////// VERSION PARA DEPLOY ////// */
+
 require("dotenv").config();
 const server = require("./src/app.js");
 const connectDB = require("./src/DB/db.js"); // Importa la función para conectar con la base de datos

@@ -4,7 +4,11 @@ const User = require("../../DB/models/User");
 const whoIsComingController = async (emailWorker, month, day) => {
   try {
     const workdays = await WorkDay.findOne({ email: emailWorker, month, day });
-
+    if (!workdays) {
+      const error = new Error("No se encontraron días creados");
+      error.statusCode = 400;
+      throw error;
+    }
     var objTurns = [];
     var arrayEmails = [];
     var result = [];
@@ -13,18 +17,18 @@ const whoIsComingController = async (emailWorker, month, day) => {
     var ini = 0;
 
     for (let i = 0; i < workdays.time.length; i++) {
-      if (workdays.time[i] != bandera && ini > 0) {
+      if (workdays.time[i].applicant != bandera && ini > 0) {
         objTurns.push({ email: bandera, ini, fin: i - 1 });
         bandera = "";
         ini = 0;
       }
       if (
-        workdays.time[i] != null &&
-        workdays.time[i] != "free" &&
+        workdays.time[i].applicant != null &&
+        workdays.time[i].applicant != "free" &&
         bandera == "" &&
         ini == 0
       ) {
-        bandera = workdays.time[i];
+        bandera = workdays.time[i].applicant;
         ini = i;
       }
     }

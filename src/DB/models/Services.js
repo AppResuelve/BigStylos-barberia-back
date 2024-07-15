@@ -1,17 +1,12 @@
 const { Schema, model } = require("mongoose");
 
-const CreateServices = new Schema(
-  {
-    allServices: {
-      type: Array,
-      required: true,
-    },
+const servicesSchema = new Schema({
+  services: {
+    type: Object,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+});
 
-const Services = model("Services", CreateServices); // este nombre solo sirve para referirme al modelo (Services)
+const Services = model("Services", servicesSchema);
 
 module.exports = Services;

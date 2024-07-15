@@ -60,14 +60,14 @@ const createServicesController = async (service, category, price, sing, type) =>
                 console.log('entra si existe en otra categoria')
                 throw new Error("El servicio ya existe en otra categoria"); // Si el servicio existe en alguna categoría retorna
               }
-              console.log('entra si no existe en otra categoria y lo crea')
-              existingServiceDoc.services[lowerCaseCategory][lowerCaseService] = {
-                price,
-                sing,
-                type,
-              };
-              isServiceAdded = true
             }
+            console.log('entra si no existe en otra categoria y lo crea')
+            existingServiceDoc.services[lowerCaseCategory][lowerCaseService] = {
+              price,
+              sing,
+              type,
+            };
+            isServiceAdded = true
           }
 
 
@@ -78,16 +78,16 @@ const createServicesController = async (service, category, price, sing, type) =>
               console.log('entra si existe en otra categoria')
               throw new Error("El servicio ya existe en otra categoria"); // Si el servicio existe en alguna categoría retorna
             }
-            console.log('entra si lo crea cuando no existe en otra categoria')
-            existingServiceDoc.services[lowerCaseCategory] = {
-              [lowerCaseService]: {
-                price,
-                sing,
-                type,
-              }
-            }
-            isServiceAdded = true
           }
+          console.log('entra si lo crea cuando no existe en otra categoria')
+          existingServiceDoc.services[lowerCaseCategory] = {
+            [lowerCaseService]: {
+              price,
+              sing,
+              type,
+            }
+          }
+          isServiceAdded = true
         }
       }
     }

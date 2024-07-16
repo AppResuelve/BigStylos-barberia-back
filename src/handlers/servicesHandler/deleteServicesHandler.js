@@ -1,10 +1,10 @@
 const deleteServicesController = require("../../controllers/servicesContollers/deleteServicesController");
 
 const deleteServicesHandler = async (req, res) => {
-    const { service, category } = req.body;
+    const { services } = req.body;
 
     try {
-        const result = await deleteServicesController(service, category);
+        const result = await deleteServicesController(services);
 
         if (result.message) {
             // Si hay un mensaje, significa que el servicio no existe

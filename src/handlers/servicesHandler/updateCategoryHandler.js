@@ -9,7 +9,7 @@ const updateCategoryHandler = async (req, res) => {
     console.error(error);
     return res
       .status(500)
-      .json({ message: "Error en handler al asignar nuevos días" });
+      .json({ message: "Error en handler al editar categoria." });
   }
 };
 

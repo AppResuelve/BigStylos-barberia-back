@@ -28,10 +28,12 @@ const updateServiceController = async (category, prev, current, price, sing, typ
                         sing,
                         type,
                     }
-                    delete servicesDoc.services[categoryLowerCase][prevLowerCase]
-                    if (servicesDoc.services[categoryLowerCase][currentLowerCase] && !servicesDoc.services[categoryLowerCase][prevLowerCase]) {
-                        updatedFlag = true
+                    if (prevLowerCase != currentLowerCase) {
+                        delete servicesDoc.services[categoryLowerCase][prevLowerCase]
                     }
+            
+                    updatedFlag = true
+
                 }
             } else {
                 throw new Error("La categoria del servicio que intentas editar no existe en base de datos.");

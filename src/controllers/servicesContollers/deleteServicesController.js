@@ -10,24 +10,24 @@ const deleteServicesController = async (services) => {
     }
 
     const servicesToDelete = services.map(service => service.toLowerCase());
-    const categoriesToCheck = new Set();
-
-    // Recorrer los servicios a eliminar
-    servicesToDelete.forEach(service => {
-      for (const [category, categoryServices] of Object.entries(existingServiceDoc.services)) {
-        if (categoryServices[service]) {
-          delete categoryServices[service];
-          categoriesToCheck.add(category);
+    
+    // Crear una copia de existingServiceDoc.services y filtrar los servicios a eliminar
+    const filteredServices = {};
+    for (const [category, categoryServices] of Object.entries(existingServiceDoc.services)) {
+      filteredServices[category] = {};
+      for (const [serviceName, serviceDetails] of Object.entries(categoryServices)) {
+        if (!servicesToDelete.includes(serviceName.toLowerCase())) {
+          filteredServices[category][serviceName] = serviceDetails;
         }
       }
-    });
+    }
 
     // Verificar si las categorías quedan vacías y eliminarlas si es necesario
-    categoriesToCheck.forEach(category => {
-      if (Object.keys(existingServiceDoc.services[category]).length === 0) {
-        delete existingServiceDoc.services[category];
+    for (const category in filteredServices) {
+      if (Object.keys(filteredServices[category]).length === 0) {
+        delete filteredServices[category];
       }
-    });
+    }
 
     // Preparar la actualización para eliminar los servicios de todos los usuarios
     const update = {};
@@ -35,11 +35,23 @@ const deleteServicesController = async (services) => {
       update[`services.${service}`] = 1;
     });
 
-    await User.updateMany({}, { $unset: update });
+    // Agregar logs detallados
+    console.log("Servicios a eliminar:", servicesToDelete);
+    console.log("Filtered Services antes de actualizar usuarios:", JSON.stringify(filteredServices, null, 2));
+
+    const userUpdateResult = await User.updateMany({}, { $unset: update });
+    console.log("Resultado de actualización de usuarios:", userUpdateResult);
+
+    // Actualizar el documento de servicios con los servicios filtrados
+    existingServiceDoc.services = Object.keys(filteredServices).length > 0 ? filteredServices : {};
 
     // Marcar la modificación y guardar el documento de servicios
     existingServiceDoc.markModified("services");
-    await existingServiceDoc.save();
+    const saveResult = await existingServiceDoc.save();
+
+    // Agregar logs detallados después de guardar
+    console.log("Documento de servicios guardado:", JSON.stringify(existingServiceDoc, null, 2));
+    console.log("Resultado de guardado:", saveResult);
 
     return existingServiceDoc; // Devolver el servicio actualizado
   } catch (error) {

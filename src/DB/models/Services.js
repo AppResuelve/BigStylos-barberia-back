@@ -5,7 +5,12 @@ const servicesSchema = new Schema({
     type: Object,
     required: true,
   },
-});
+},
+{
+  timestamps: true,
+  minimize: false,
+}
+);
 
 const Services = model("Services", servicesSchema);
 

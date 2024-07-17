@@ -36,11 +36,8 @@ const deleteServicesController = async (services) => {
     });
 
     // Agregar logs detallados
-    console.log("Servicios a eliminar:", servicesToDelete);
-    console.log("Filtered Services antes de actualizar usuarios:", JSON.stringify(filteredServices, null, 2));
 
     const userUpdateResult = await User.updateMany({}, { $unset: update });
-    console.log("Resultado de actualización de usuarios:", userUpdateResult);
 
     // Actualizar el documento de servicios con los servicios filtrados
     existingServiceDoc.services = Object.keys(filteredServices).length > 0 ? filteredServices : {};
@@ -50,8 +47,6 @@ const deleteServicesController = async (services) => {
     const saveResult = await existingServiceDoc.save();
 
     // Agregar logs detallados después de guardar
-    console.log("Documento de servicios guardado:", JSON.stringify(existingServiceDoc, null, 2));
-    console.log("Resultado de guardado:", saveResult);
 
     return existingServiceDoc; // Devolver el servicio actualizado
   } catch (error) {

@@ -34,8 +34,6 @@ const createGoogleUserController = async (name, email, image) => {
       });
 
       const existingServiceDoc = await Services.findOne({});
-      console.log(existingServiceDoc.services, 'esto muestra al acceder a services')
-      console.log(existingServiceDoc.services.hombre, 'esto es lo que trae dentro de hombre')
 
       if (existingServiceDoc && existingServiceDoc.services) {
         const servicesObject = {};

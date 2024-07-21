@@ -5,7 +5,7 @@ const getWorkersController = async () => {
     const users = await User.find({worker: true})
     const result = []
     users.forEach(element => {
-        result.push({email: element.email, name: element.name})
+        result.push({email: element.email, name: element.name, image: element.image})
     })
     return result;
 

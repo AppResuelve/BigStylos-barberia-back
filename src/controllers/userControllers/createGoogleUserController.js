@@ -34,8 +34,7 @@ const createGoogleUserController = async (name, email, image) => {
       });
 
       const existingServiceDoc = await Services.findOne({});
-      console.log(existingServiceDoc.services, 'esto muestra al acceder a services')
-      console.log(existingServiceDoc.services.hombre, 'esto es lo que trae dentro de hombre')
+      console.log(existingGoogleUser, "esto es existingGoogleUser")
 
       if (existingServiceDoc && existingServiceDoc.services) {
         const servicesObject = {};
@@ -48,13 +47,13 @@ const createGoogleUserController = async (name, email, image) => {
             }
           }
         }
-
+        console.log(servicesObject, "esto es servicesObject")
         newGoogleUser.services = servicesObject;
       }
 
       // Guardar el nuevo usuario en la base de datos
       await newGoogleUser.save();
-
+      console.log(newGoogleUser.services, "esto es newGoogleUser.ser")
       return {
         id: newGoogleUser.id,
         name: newGoogleUser.name,

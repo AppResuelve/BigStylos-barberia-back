@@ -2,10 +2,10 @@ const getDayForTurnsController = require("../../controllers/workDaysControllers/
 
 
 const getDayForTurnsHandler = async (req, res) => {
-  const { dayForTurns } = req.body;
+  const { dayForTurns, worker, service } = req.body;
 
   try {
-    const day = await getDayForTurnsController(dayForTurns);
+    const day = await getDayForTurnsController(dayForTurns, worker, service);
     res.status(200).json(day);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener el dia." });

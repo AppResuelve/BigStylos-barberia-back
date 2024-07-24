@@ -44,7 +44,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
         }
       }
 
-
+      // me falta aplicarle random para no devolver todos los botones sino solo los que no se repitan de cada usuario
       return buttonsArray;
     
       })

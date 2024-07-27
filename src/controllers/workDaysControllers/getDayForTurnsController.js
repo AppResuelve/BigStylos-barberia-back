@@ -10,7 +10,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
         month,
         day,
         'services.name': service.name,
-        'services.available': true
+        //'services.available': true
       });
 
       const buttonsArrayPerDay = days.map(day => {
@@ -49,18 +49,20 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
 
       const unifiedButtonsArray = buttonsArrayPerDay.flat();
 
-      // Filtrar duplicados de forma aleatoria
-      const uniqueButtonsArray = unifiedButtonsArray.reduce((acc, current) => {
-        if (!acc.some(item => item.ini === current.ini)) {
-          acc.push(current);
-        } else {
-          const existingIndex = acc.findIndex(item => item.ini === current.ini);
-          if (Math.random() < 0.5) {
-            acc[existingIndex] = current;
-          }
+      // Agrupar por 'ini'
+      const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = [];
         }
+        acc[current.ini].push(current);
         return acc;
-      }, []);
+      }, {});
+
+      // Seleccionar un elemento aleatorio por cada 'ini'
+      const uniqueButtonsArray = Object.values(groupedByIni).map(group => {
+        const randomIndex = Math.floor(Math.random() * group.length);
+        return group[randomIndex];
+      });
 
       return uniqueButtonsArray;
     } else {
@@ -68,7 +70,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
         month,
         day,
         'services.name': service.name,
-        'services.available': true,
+        //'services.available': true,
         email: worker
       });
 
@@ -99,18 +101,20 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
         }
       }
 
-      // Filtrar duplicados de forma aleatoria
-      const uniqueButtonsArray = buttonsArray.reduce((acc, current) => {
-        if (!acc.some(item => item.ini === current.ini)) {
-          acc.push(current);
-        } else {
-          const existingIndex = acc.findIndex(item => item.ini === current.ini);
-          if (Math.random() < 0.5) {
-            acc[existingIndex] = current;
-          }
+      // Agrupar por 'ini'
+      const groupedByIni = buttonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = [];
         }
+        acc[current.ini].push(current);
         return acc;
-      }, []);
+      }, {});
+
+      // Seleccionar un elemento aleatorio por cada 'ini'
+      const uniqueButtonsArray = Object.values(groupedByIni).map(group => {
+        const randomIndex = Math.floor(Math.random() * group.length);
+        return group[randomIndex];
+      });
 
       return uniqueButtonsArray;
     }

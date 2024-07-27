@@ -9,90 +9,112 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
       const days = await WorkDay.find({
         month,
         day,
-        'services.name': service.name
+        'services.name': service.name,
+        'services.available': true
       });
 
       const buttonsArrayPerDay = days.map(day => {
-        let duration = day.services[service].duration
-
-      let ini = null
-      let flag = 0
-
-      let buttonsArray = []
-
-      for (let i = 0; i < day.time.length; i ++) {
-        if (day.time[i].applicant != "free") {
-          ini = null
-          flag = 0
+        let duration = 2000;
+        if (day.services[service]) {
+          duration = day.services[service].duration;
         }
-        if (day.time[i].applicant === "free" && flag === 0 ) {
 
-          ini = i
-          flag = 1
-      }
-        if (flag == duration) {
+        let ini = null;
+        let flag = 0;
+        let buttonsArray = [];
 
-          buttonsArray.push({
-            ini,
-            end: i,
-            worker: day.email
-          })
-          flag = 0
+        for (let i = 0; i < day.time.length; i++) {
+          if (day.time[i].applicant != "free") {
+            ini = null;
+            flag = 0;
+          }
+          if (day.time[i].applicant === "free" && flag === 0) {
+            ini = i;
+            flag = 1;
+          }
+          if (flag == duration) {
+            buttonsArray.push({
+              ini,
+              end: i,
+              worker: day.email
+            });
+            flag = 0;
+          }
+          if (day.time[i].applicant === "free" && flag > 0) {
+            flag++;
+          }
         }
-        if (day.time[i].applicant === "free" && flag > 0) {
-          flag ++
-        }
-      }
+        return buttonsArray;
+      });
 
-      // me falta aplicarle random para no devolver todos los botones sino solo los que no se repitan de cada usuario
-      return buttonsArray;
-    
-      })
-  
       const unifiedButtonsArray = buttonsArrayPerDay.flat();
-      return unifiedButtonsArray;
+
+      // Filtrar duplicados de forma aleatoria
+      const uniqueButtonsArray = unifiedButtonsArray.reduce((acc, current) => {
+        if (!acc.some(item => item.ini === current.ini)) {
+          acc.push(current);
+        } else {
+          const existingIndex = acc.findIndex(item => item.ini === current.ini);
+          if (Math.random() < 0.5) {
+            acc[existingIndex] = current;
+          }
+        }
+        return acc;
+      }, []);
+
+      return uniqueButtonsArray;
     } else {
       const days = await WorkDay.findOne({
         month,
         day,
         'services.name': service.name,
+        'services.available': true,
         email: worker
       });
 
-      let duration = days.services[service].duration
+      let duration = days.services[service].duration;
+      let ini = null;
+      let flag = 0;
+      let buttonsArray = [];
 
-      let ini = null
-      let flag = 0
-
-      let buttonsArray = []
-
-      for (let i = 0; i < days.time.length; i ++) {
+      for (let i = 0; i < days.time.length; i++) {
         if (days.time[i].applicant != "free") {
-          ini = null
-          flag = 0
+          ini = null;
+          flag = 0;
         }
-        if (days.time[i].applicant === "free" && flag === 0 ) {
-          console.log('entre al primer if')
-          ini = i
-          flag = 1
-      }
+        if (days.time[i].applicant === "free" && flag === 0) {
+          ini = i;
+          flag = 1;
+        }
         if (flag == duration) {
-          console.log('entre al cierre')
           buttonsArray.push({
             ini,
             end: i,
             worker: days.email
-          })
-          flag = 0
+          });
+          flag = 0;
         }
         if (days.time[i].applicant === "free" && flag > 0) {
-          flag ++
+          flag++;
         }
       }
-      console.log(buttonsArray, "buttonsArray")
-      return buttonsArray;
+
+      // Filtrar duplicados de forma aleatoria
+      const uniqueButtonsArray = buttonsArray.reduce((acc, current) => {
+        if (!acc.some(item => item.ini === current.ini)) {
+          acc.push(current);
+        } else {
+          const existingIndex = acc.findIndex(item => item.ini === current.ini);
+          if (Math.random() < 0.5) {
+            acc[existingIndex] = current;
+          }
+        }
+        return acc;
+      }, []);
+
+      return uniqueButtonsArray;
     }
-    
+
   } catch (error) {
     console.error("Error al obtener el día:", error);
     throw error;

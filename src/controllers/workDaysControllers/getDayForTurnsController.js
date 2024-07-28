@@ -49,20 +49,31 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
 
       const unifiedButtonsArray = buttonsArrayPerDay.flat();
 
-      // Agrupar por 'ini'
-      const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
+      
+      /* const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
         if (!acc[current.ini]) {
           acc[current.ini] = [];
         }
         acc[current.ini].push(current);
         return acc;
       }, {});
-
-      // Seleccionar un elemento aleatorio por cada 'ini'
       const uniqueButtonsArray = Object.values(groupedByIni).map(group => {
         const randomIndex = Math.floor(Math.random() * group.length);
         return group[randomIndex];
       });
+
+      return uniqueButtonsArray; */
+      // Agrupar por 'ini'
+      const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = { ini: current.ini, end: current.end, worker: [] };
+        }
+        acc[current.ini].worker.push(current.worker);
+        return acc;
+      }, {});
+
+      // Convertir a un array
+      const uniqueButtonsArray = Object.values(groupedByIni);
 
       return uniqueButtonsArray;
     } else {
@@ -92,7 +103,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
           buttonsArray.push({
             ini,
             end: i,
-            worker: days.email
+            worker: [days.email]
           });
           flag = 0;
         }

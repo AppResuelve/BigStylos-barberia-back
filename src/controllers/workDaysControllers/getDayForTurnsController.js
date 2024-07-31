@@ -9,90 +9,129 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
       const days = await WorkDay.find({
         month,
         day,
-        'services.name': service.name
+        'services.name': service.name,
+        //'services.available': true
       });
 
       const buttonsArrayPerDay = days.map(day => {
-        let duration = day.services[service].duration
-
-      let ini = null
-      let flag = 0
-
-      let buttonsArray = []
-
-      for (let i = 0; i < day.time.length; i ++) {
-        if (day.time[i].applicant != "free") {
-          ini = null
-          flag = 0
+        let duration = 2000;
+        if (day.services[service]) {
+          duration = day.services[service].duration;
         }
-        if (day.time[i].applicant === "free" && flag === 0 ) {
 
-          ini = i
-          flag = 1
-      }
-        if (flag == duration) {
+        let ini = null;
+        let flag = 0;
+        let buttonsArray = [];
 
-          buttonsArray.push({
-            ini,
-            end: i,
-            worker: day.email
-          })
-          flag = 0
+        for (let i = 0; i < day.time.length; i++) {
+          if (day.time[i].applicant != "free") {
+            ini = null;
+            flag = 0;
+          }
+          if (day.time[i].applicant === "free" && flag === 0) {
+            ini = i;
+            flag = 1;
+          }
+          if (flag == duration) {
+            buttonsArray.push({
+              ini,
+              end: i,
+              worker: day.email,
+              day,
+              month
+            });
+            flag = 0;
+          }
+          if (day.time[i].applicant === "free" && flag > 0) {
+            flag++;
+          }
         }
-        if (day.time[i].applicant === "free" && flag > 0) {
-          flag ++
-        }
-      }
+        return buttonsArray;
+      });
 
-      // me falta aplicarle random para no devolver todos los botones sino solo los que no se repitan de cada usuario
-      return buttonsArray;
-    
-      })
-  
       const unifiedButtonsArray = buttonsArrayPerDay.flat();
-      return unifiedButtonsArray;
+
+      
+      /* const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = [];
+        }
+        acc[current.ini].push(current);
+        return acc;
+      }, {});
+      const uniqueButtonsArray = Object.values(groupedByIni).map(group => {
+        const randomIndex = Math.floor(Math.random() * group.length);
+        return group[randomIndex];
+      });
+
+      return uniqueButtonsArray; */
+      // Agrupar por 'ini'
+      const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = { ini: current.ini, end: current.end, worker: [] };
+        }
+        acc[current.ini].worker.push(current.worker);
+        return acc;
+      }, {});
+
+      // Convertir a un array
+      const uniqueButtonsArray = Object.values(groupedByIni);
+
+      return uniqueButtonsArray;
     } else {
       const days = await WorkDay.findOne({
         month,
         day,
         'services.name': service.name,
+        //'services.available': true,
         email: worker
       });
 
-      let duration = days.services[service].duration
+      let duration = days.services[service].duration;
+      let ini = null;
+      let flag = 0;
+      let buttonsArray = [];
 
-      let ini = null
-      let flag = 0
-
-      let buttonsArray = []
-
-      for (let i = 0; i < days.time.length; i ++) {
+      for (let i = 0; i < days.time.length; i++) {
         if (days.time[i].applicant != "free") {
-          ini = null
-          flag = 0
+          ini = null;
+          flag = 0;
         }
-        if (days.time[i].applicant === "free" && flag === 0 ) {
-          console.log('entre al primer if')
-          ini = i
-          flag = 1
-      }
+        if (days.time[i].applicant === "free" && flag === 0) {
+          ini = i;
+          flag = 1;
+        }
         if (flag == duration) {
-          console.log('entre al cierre')
           buttonsArray.push({
             ini,
             end: i,
-            worker: days.email
-          })
-          flag = 0
+            worker: [days.email]
+          });
+          flag = 0;
         }
         if (days.time[i].applicant === "free" && flag > 0) {
-          flag ++
+          flag++;
         }
       }
-      console.log(buttonsArray, "buttonsArray")
-      return buttonsArray;
+
+      // Agrupar por 'ini'
+      const groupedByIni = buttonsArray.reduce((acc, current) => {
+        if (!acc[current.ini]) {
+          acc[current.ini] = [];
+        }
+        acc[current.ini].push(current);
+        return acc;
+      }, {});
+
+      // Seleccionar un elemento aleatorio por cada 'ini'
+      const uniqueButtonsArray = Object.values(groupedByIni).map(group => {
+        const randomIndex = Math.floor(Math.random() * group.length);
+        return group[randomIndex];
+      });
+
+      return uniqueButtonsArray;
     }
-    
+
   } catch (error) {
     console.error("Error al obtener el día:", error);
     throw error;

@@ -1,6 +1,7 @@
 const WorkDay = require("../../DB/models/WorkDay");
 
 const getDaysByServicesController = async (serviceForTurns) => {
+  console.log(serviceForTurns, "serviceForTurns <---------")
 
   try {
     const days = await WorkDay.find({});

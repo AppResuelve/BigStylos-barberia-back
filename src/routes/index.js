@@ -15,5 +15,6 @@ router.use("/services", servicesRoutes);
 router.use("/schedule", scheduleRoutes);
 router.use("/personalization", personalizationRoutes);
 router.use("/cancelledturns", cancelledRoutes);
+router.use("/mercadopago", mercadoPagoRoutes);
 
 module.exports = router;

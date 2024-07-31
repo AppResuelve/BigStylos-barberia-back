@@ -36,7 +36,9 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
             buttonsArray.push({
               ini,
               end: i,
-              worker: day.email
+              worker: day.email,
+              day,
+              month
             });
             flag = 0;
           }

@@ -1,5 +1,5 @@
 //import { MercadoPagoConfig, Preference } from "mercadopago";
-const { MercadoPagoConfig, Preference } = require "mercadopago";
+const { MercadoPagoConfig, Preference } = require ("mercadopago");
 
 const createPreferenceController = async ( arrayItems ) => {
 

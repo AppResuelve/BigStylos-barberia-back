@@ -6,6 +6,7 @@ const servicesRoutes = require("./routes/servicesRoutes.js");
 const scheduleRoutes = require("./routes/scheduleRoutes.js");
 const personalizationRoutes = require("./routes/personalizationRoutes.js");
 const cancelledRoutes = require("./routes/cancelledTurnsRoutes.js");
+const mercadoPagoRoutes = require("./routes/mercadoPagoRoutes.js")
 
 const router = Router(); // ejecuta Router de express
 

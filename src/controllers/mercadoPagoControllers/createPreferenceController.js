@@ -1,5 +1,5 @@
 //import { MercadoPagoConfig, Preference } from "mercadopago";
-const { MercadoPagoConfig, Preference } = require "mercadopago";
+const { MercadoPagoConfig, Preference } = require ("mercadopago");
 
 const createPreferenceController = async ( arrayItems ) => {
 
@@ -15,7 +15,7 @@ const createPreferenceController = async ( arrayItems ) => {
     })
     
     const client = new MercadoPagoConfig({
-        accessToken: "",
+        accessToken: "TEST-4844529947673713-080117-5d1abb3e94715889cf655ee01ce52c15-662823752",
     })
   
   try {

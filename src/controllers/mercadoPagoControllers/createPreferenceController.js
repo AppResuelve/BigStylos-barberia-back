@@ -28,7 +28,8 @@ const createPreferenceController = async (arrayItems) => {
           "https://www.youtube.com/watch?v=waiu1gimdy8&list=RDwaiu1gimdy8&start_radio=1",
       },
       auto_return: "approved",
-      notification_url: "https://appturnos-back.onrender.com/mp_notifications",
+      notification_url:
+        "https://cd56-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
     };
 
     const preference = new Preference(client);

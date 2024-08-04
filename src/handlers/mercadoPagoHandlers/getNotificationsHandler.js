@@ -6,23 +6,23 @@ const client = new MercadoPagoConfig({
 });
 
 const getNotificationsHandler = async (req, res) => {
-  const { paymentId } = req.query;
-
+  const paymentId = req.query.id;
+  console.log(paymentId);
   try {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentId}`,
       {
         method: "GET",
         headers: {
-          Authorization: `Barear ${client.accesToken}`,
+          "Authorization": `Bearer ${client.accessToken}`,
         },
       }
     );
-    if (response.ok) {
+    if (response) {
       const data = await response.json();
       console.log(data);
     }
-    res.status(200).json(preference);
+    res.sendStatus(200);
   } catch (error) {
     res.status(500).json({ message: "Error creating user." });
   }

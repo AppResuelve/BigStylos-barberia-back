@@ -3,7 +3,7 @@ const corroborate = (time, duration) => {
     let available = false
     time.forEach(element => {
         
-        if (element == "free") {
+        if (element.applicant == "free") {
             contador++
         } else {
             contador = 0

@@ -44,9 +44,7 @@ const createPreferenceController = async (arrayItems) => {
 
     const preference = new Preference(client);
     const result = await preference.create({ body });
-    console.log(result);
     setTimeout(() => {
-      console.log("hola gorriao");
     }, 10000);
 
     return result.init_point;

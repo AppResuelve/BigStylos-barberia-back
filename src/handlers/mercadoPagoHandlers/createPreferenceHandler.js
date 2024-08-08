@@ -5,7 +5,7 @@ const createPreference = async (req, res) => {
 
   try {
     const preference = await createPreferenceController(arrayItems);
-    res.status(200).json(preference);
+    res.status(200).json(preference );
   } catch (error) {
     res.status(500).json({ message: "Error creating user." });
   }

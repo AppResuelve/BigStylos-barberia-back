@@ -1,65 +1,147 @@
 const WorkDay = require("../../DB/models/WorkDay");
 const corroborate = require("../../helpers/corroborateDisponibility");
 
-const createTurnController = async (
-  date,
-  emailWorker,
-  selectedTime,
-  serviceSelected,
-  user
-) => {
-  console.log(date, emailWorker, selectedTime, serviceSelected, user);
+const createTurnController = async (arrayItems) => {
+  console.log(arrayItems);
+
+  const uno = arrayItems[0];
+  const dos = arrayItems[1];
+  const tres = arrayItems[2];
+
+  var newUno = null;
+  var newDos = null;
+  var newTres = null;
+
+  var errors = [];
+
   try {
-    var asignTurn = await WorkDay.findOne({
-      month: date[1],
-      day: date[0],
-      email: emailWorker,
-    });
+    const processItem = async (item) => {
+      const { ini, end, day, month, user, service } = item;
+      const documents = await WorkDay.aggregate([
+        {
+          $match: {
+            email: { $in: item.worker },
+            day: day,
+            month: month,
+          },
+        },
+        {
+          $project: {
+            email: 1,
+            day: 1,
+            month: 1,
+            time: 1,
+            services: 1,
+            name: 1,
+            turn: 1,
+            free: {
+              $reduce: {
+                input: { $slice: ["$time", ini, end - ini + 1] },
+                initialValue: true,
+                in: {
+                  $and: ["$$value", { $eq: ["$$this.applicant", "free"] }],
+                },
+              },
+            },
+          },
+        },
+        {
+          $match: {
+            free: true,
+          },
+        },
+      ]).exec();
 
-    if (!asignTurn) {
-      throw new Error("La fecha seleccionada no tiene turnos disponibles");
-    }
-
-    let contador = 0;
-    let ini = 0;
-    const duration = asignTurn.services[serviceSelected].duration;
-
-    for (let i = 0; i < asignTurn.time.length; i++) {
-      if (contador > 0 && contador < duration) {
-        asignTurn.time[i].applicant = user;
-        asignTurn.time[i].requiredService = serviceSelected;
-        asignTurn.time[i].ini = ini;
-        asignTurn.time[i].end = ini + (duration - 1);
-        contador++;
-      }
-
-      if (asignTurn.time[i].applicant === "free" && i === selectedTime) {
-        asignTurn.time[i].applicant = user;
-        asignTurn.time[i].requiredService = serviceSelected;
-        asignTurn.time[i].ini = i;
-        asignTurn.time[i].end = i + (duration - 1);
-        ini = i;
-        contador++;
-      }
-    }
-
-    const serv = Object.keys(asignTurn.services);
-    serv.forEach((element) => {
-      if (corroborate(asignTurn.time, asignTurn.services[element].duration)) {
-        asignTurn.services[element].available = true;
+      if (item.quantity > documents.length) {
+        errors.push(item); // Guardar el error para el front
       } else {
-        asignTurn.services[element].available = false;
+        let selectedDocuments;
+
+        if (item.quantity < documents.length) {
+          selectedDocuments = [];
+          let tempDocs = [...documents];
+          while (selectedDocuments.length < item.quantity) {
+            const randomIndex = Math.floor(Math.random() * tempDocs.length);
+            selectedDocuments.push(tempDocs.splice(randomIndex, 1)[0]);
+          }
+        } else {
+          selectedDocuments = documents;
+        }
+
+        let updatedDocuments = selectedDocuments.map((doc) => {
+          let updatedTime = [...doc.time];
+          for (let i = ini; i <= end; i++) {
+            if (updatedTime[i]) {
+              updatedTime[i].applicant = user;
+              updatedTime[i].ini = ini;
+              updatedTime[i].end = end;
+              updatedTime[i].requiredService = service;
+            }
+          }
+
+          // Actualizar la disponibilidad de los servicios
+          let servicesKeys = Object.keys(doc.services);
+          servicesKeys.forEach(serviceKey => {
+            let service = doc.services[serviceKey];
+            service.available = corroborate(updatedTime, service.duration);
+          });
+
+          return {
+            _id: doc._id,
+            updatedTime,
+            updatedServices: doc.services,
+          };
+        });
+
+        return updatedDocuments;
       }
-    });
+    };
 
-    asignTurn.turn = true;
+    if (uno) {
+      newUno = await processItem(uno);
+    }
 
-    // Marcar los cambios en los subdocumentos como modificados
-    asignTurn.markModified("time");
-    asignTurn.markModified("services");
+    if (dos) {
+      newDos = await processItem(dos);
+    }
 
-    await asignTurn.save();
-    return asignTurn;
+    if (tres) {
+      newTres = await processItem(tres);
+    }
+
+    if (errors.length > 0) {
+      let errorsResult = { errors: errors}
+      return errorsResult
+      
+    } else {
+      let bulkOperations = [];
+
+      const prepareBulkOperations = (documents) => {
+        documents.forEach(doc => {
+          bulkOperations.push({
+            updateOne: {
+              filter: { _id: doc._id },
+              update: {
+                $set: {
+                  time: doc.updatedTime,
+                  services: doc.updatedServices,
+                }
+              }
+            }
+          });
+        });
+      };
+
+      if (newUno) prepareBulkOperations(newUno);
+      if (newDos) prepareBulkOperations(newDos);
+      if (newTres) prepareBulkOperations(newTres);
+
+      if (bulkOperations.length > 0) {
+        await WorkDay.bulkWrite(bulkOperations);
+      }
+    }
+    let success = {success: arrayItems}
+    return success;
   } catch (error) {
     console.error("Error al reservar turno (controller):", error);
     throw error;

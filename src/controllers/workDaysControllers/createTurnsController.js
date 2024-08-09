@@ -16,42 +16,48 @@ const createTurnController = async (arrayItems) => {
 
   try {
     const processItem = async (item) => {
-      const { ini, end, day, month, user, service } = item;
-      const documents = await WorkDay.aggregate([
-        {
-          $match: {
-            email: { $in: item.worker },
-            day: day,
-            month: month,
+      const { ini, end, day, month, user, service, worker } = item;
+      var documents = [];
+      for (let i = 0; i < item.worker.length; i++) {
+
+        let document = await WorkDay.aggregate([
+          {
+            $match: {
+              email: worker[i].email,
+              day: day,
+              month: month,
+            },
           },
-        },
-        {
-          $project: {
-            email: 1,
-            day: 1,
-            month: 1,
-            time: 1,
-            services: 1,
-            name: 1,
-            turn: 1,
-            free: {
-              $reduce: {
-                input: { $slice: ["$time", ini, end - ini + 1] },
-                initialValue: true,
-                in: {
-                  $and: ["$$value", { $eq: ["$$this.applicant", "free"] }],
+          {
+            $project: {
+              email: 1,
+              day: 1,
+              month: 1,
+              time: 1,
+              services: 1,
+              name: 1,
+              turn: 1,
+              free: {
+                $reduce: {
+                  input: { $slice: ["$time", ini, worker[i].end - ini + 1] },
+                  initialValue: true,
+                  in: {
+                    $and: ["$$value", { $eq: ["$$this.applicant", "free"] }],
+                  },
                 },
               },
             },
           },
-        },
-        {
-          $match: {
-            free: true,
+          {
+            $match: {
+              free: true,
+            },
           },
-        },
-      ]).exec();
-
+        ]).exec();
+        if (document.length > 0) {
+          documents.push(document[0]);
+        }
+      }
       if (item.quantity > documents.length) {
         errors.push(item); // Guardar el error para el front
       } else {
@@ -81,7 +87,7 @@ const createTurnController = async (arrayItems) => {
 
           // Actualizar la disponibilidad de los servicios
           let servicesKeys = Object.keys(doc.services);
-          servicesKeys.forEach(serviceKey => {
+          servicesKeys.forEach((serviceKey) => {
             let service = doc.services[serviceKey];
             service.available = corroborate(updatedTime, service.duration);
           });
@@ -110,14 +116,13 @@ const createTurnController = async (arrayItems) => {
     }
 
     if (errors.length > 0) {
-      let errorsResult = { errors: errors}
-      return errorsResult
-      
+      let errorsResult = { errors: errors };
+      return errorsResult;
     } else {
       let bulkOperations = [];
 
       const prepareBulkOperations = (documents) => {
-        documents.forEach(doc => {
+        documents.forEach((doc) => {
           bulkOperations.push({
             updateOne: {
               filter: { _id: doc._id },
@@ -125,9 +130,9 @@ const createTurnController = async (arrayItems) => {
                 $set: {
                   time: doc.updatedTime,
                   services: doc.updatedServices,
-                }
-              }
-            }
+                },
+              },
+            },
           });
         });
       };
@@ -140,7 +145,7 @@ const createTurnController = async (arrayItems) => {
         await WorkDay.bulkWrite(bulkOperations);
       }
     }
-    let success = {success: arrayItems}
+    let success = { success: arrayItems };
     return success;
   } catch (error) {
     console.error("Error al reservar turno (controller):", error);

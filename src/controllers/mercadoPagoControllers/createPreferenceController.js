@@ -47,7 +47,7 @@ const createPreferenceController = async (arrayItems) => {
     setTimeout(() => {
     }, 10000);
 
-    return result.init_point;
+    return result.sandbox_init_point;
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
     throw error;

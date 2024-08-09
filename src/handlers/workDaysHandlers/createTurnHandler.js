@@ -2,9 +2,9 @@ const createTurnController = require("../../controllers/workDaysControllers/crea
 
 const createTurnHandler = async (req, res) => {
 
-  const { date, emailWorker, selectedTime, serviceSelected, user } = req.body; // cola de solicitudes, NO array
+  const { arrayItems } = req.body;
   try {
-    const newDays = await createTurnController(date, emailWorker, selectedTime, serviceSelected, user);
+    const newDays = await createTurnController( arrayItems );
     res.status(200).json(newDays);
   } catch (error) {
     res.status(500).json({ message: "Error al reservar turno (handler)." });

@@ -1,6 +1,7 @@
 const WorkDay = require("../../DB/models/WorkDay");
 
-const getDayForTurnsController = async (dayForTurns, worker, service) => {
+const getDayForTurnsController = async (dayForTurns, worker, service) => { //[ 9, 8 ], cualquiera, barba
+
   try {
     const day = dayForTurns[0];
     const month = dayForTurns[1];
@@ -51,7 +52,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
 
       const unifiedButtonsArray = buttonsArrayPerDay.flat();
 
-      
+      // anteriormente usaba esto para devolver random de workers en botones
       /* const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
         if (!acc[current.ini]) {
           acc[current.ini] = [];
@@ -65,20 +66,21 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
       });
 
       return uniqueButtonsArray; */
+      
       // Agrupar por 'ini'
       const groupedByIni = unifiedButtonsArray.reduce((acc, current) => {
         if (!acc[current.ini]) {
-          acc[current.ini] = { ini: current.ini, end: current.end, worker: [] };
+          acc[current.ini] = { ini: current.ini, worker: [] };
         }
-        acc[current.ini].worker.push(current.worker);
+        //acc[current.ini].worker.push(current.worker);
+        acc[current.ini].worker.push({ email: current.worker, end: current.end });
         return acc;
       }, {});
-
       // Convertir a un array
       const uniqueButtonsArray = Object.values(groupedByIni);
 
       return uniqueButtonsArray;
-    } else {
+    } else { //----------------------------------------------------------------------------------------
       const days = await WorkDay.findOne({
         month,
         day,
@@ -104,8 +106,7 @@ const getDayForTurnsController = async (dayForTurns, worker, service) => {
         if (flag == duration) {
           buttonsArray.push({
             ini,
-            end: i,
-            worker: [days.email]
+            worker: [{email:days.email, end: i}]
           });
           flag = 0;
         }

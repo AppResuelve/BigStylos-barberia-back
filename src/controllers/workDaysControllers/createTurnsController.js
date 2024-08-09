@@ -2,7 +2,6 @@ const WorkDay = require("../../DB/models/WorkDay");
 const corroborate = require("../../helpers/corroborateDisponibility");
 
 const createTurnController = async (arrayItems) => {
-  console.log(arrayItems);
 
   const uno = arrayItems[0];
   const dos = arrayItems[1];
@@ -16,10 +15,9 @@ const createTurnController = async (arrayItems) => {
 
   try {
     const processItem = async (item) => {
-      const { ini, end, day, month, user, service, worker } = item;
+      const { ini, day, month, user, service, worker } = item;
       var documents = [];
       for (let i = 0; i < item.worker.length; i++) {
-
         let document = await WorkDay.aggregate([
           {
             $match: {
@@ -54,6 +52,7 @@ const createTurnController = async (arrayItems) => {
             },
           },
         ]).exec();
+
         if (document.length > 0) {
           documents.push(document[0]);
         }
@@ -76,13 +75,18 @@ const createTurnController = async (arrayItems) => {
 
         let updatedDocuments = selectedDocuments.map((doc) => {
           let updatedTime = [...doc.time];
-          for (let i = ini; i <= end; i++) {
-            if (updatedTime[i]) {
-              updatedTime[i].applicant = user;
-              updatedTime[i].ini = ini;
-              updatedTime[i].end = end;
-              updatedTime[i].requiredService = service;
+          let end = worker.map((wrk) => {
+            if (wrk.email === doc.email) {
+              return wrk.end;
             }
+          });
+
+          for (let i = ini; i <= end[0]; i++) {
+
+            updatedTime[i].applicant = user;
+            updatedTime[i].ini = ini;
+            updatedTime[i].end = end[0];
+            updatedTime[i].requiredService = service;
           }
 
           // Actualizar la disponibilidad de los servicios
@@ -129,7 +133,7 @@ const createTurnController = async (arrayItems) => {
               update: {
                 $set: {
                   time: doc.updatedTime,
-                  services: doc.updatedServices,
+                  services: doc.updatedServices.updatedServices,
                 },
               },
             },
@@ -140,6 +144,7 @@ const createTurnController = async (arrayItems) => {
       if (newUno) prepareBulkOperations(newUno);
       if (newDos) prepareBulkOperations(newDos);
       if (newTres) prepareBulkOperations(newTres);
+
 
       if (bulkOperations.length > 0) {
         await WorkDay.bulkWrite(bulkOperations);

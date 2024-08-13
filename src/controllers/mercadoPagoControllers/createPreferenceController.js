@@ -43,7 +43,6 @@ const createPreferenceController = async (arrayItems) => {
     const preference = new Preference(client);
     const result = await preference.create({ body });
     // setTimeout(() => {}, 10000);
-    console.log(result, "este es el result");
 
     return {
       init_point: result.sandbox_init_point,

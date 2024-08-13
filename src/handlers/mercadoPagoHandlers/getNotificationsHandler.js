@@ -9,9 +9,9 @@ const client = new MercadoPagoConfig({
 const getNotificationsHandler = async (req, res) => {
   console.log(req.query, "este es el req, queryy");
   let paymentId;
-  if (req.query.type && req.query.type === "payment") {
-    paymentId = req.query.id;
-    console.log(paymentId);
+  // if (req.query.type && req.query.type === "payment") {
+  //   paymentId = req.query.id;
+  //   console.log(paymentId);
 
     try {
       const response = await axios.get(
@@ -28,7 +28,7 @@ const getNotificationsHandler = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "Error creating user." });
     }
-  }
+  // }
 };
 
 module.exports = getNotificationsHandler;

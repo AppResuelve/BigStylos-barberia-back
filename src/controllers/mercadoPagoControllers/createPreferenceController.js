@@ -1,8 +1,6 @@
-//import { MercadoPagoConfig, Preference } from "mercadopago";
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const axios = require("axios");
 
 const createPreferenceController = async (arrayItems) => {
   var items = [];
@@ -29,8 +27,8 @@ const createPreferenceController = async (arrayItems) => {
     const body = {
       items,
       back_urls: {
-        success: `${FRONTEND_URL}/`,
-        failure: `${FRONTEND_URL}/requestDenied401`,
+        success: `${FRONTEND_URL}/turns`,
+        failure: `${FRONTEND_URL}/`,
         pending:
           "https://www.youtube.com/watch?v=waiu1gimdy8&list=RDwaiu1gimdy8&start_radio=1",
       },
@@ -44,10 +42,13 @@ const createPreferenceController = async (arrayItems) => {
 
     const preference = new Preference(client);
     const result = await preference.create({ body });
-    setTimeout(() => {
-    }, 10000);
+    // setTimeout(() => {}, 10000);
+    console.log(result, "este es el result");
 
-    return result.sandbox_init_point;
+    return {
+      init_point: result.sandbox_init_point,
+      preference_id: result.id,
+    };
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
     throw error;

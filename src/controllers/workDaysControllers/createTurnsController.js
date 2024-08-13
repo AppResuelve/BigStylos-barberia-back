@@ -149,9 +149,9 @@ const createTurnController = async (arrayItems) => {
       if (bulkOperations.length > 0) {
         await WorkDay.bulkWrite(bulkOperations);
       }
+      let success = { success: arrayItems };
+      return success;
     }
-    let success = { success: arrayItems };
-    return success;
   } catch (error) {
     console.error("Error al reservar turno (controller):", error);
     throw error;

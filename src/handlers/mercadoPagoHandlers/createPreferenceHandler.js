@@ -1,20 +1,25 @@
 const createPreferenceController = require("../../controllers/mercadoPagoControllers/createPreferenceController");
-const createTurnController = require("../../controllers/workDaysControllers/createTurnsController");
 const pendingTurnsController = require("../../controllers/workDaysControllers/pendingTurnsController");
+const toFreeTurnsController = require("../../controllers/workDaysControllers/toFreeTurnsController");
 
 const createPreference = async (req, res) => {
   const { cartWithSing, arrayItems } = req.body;
 
   try {
     const pendingTurns = await pendingTurnsController(arrayItems);
+
     if (pendingTurns.success) {
       let response = await createPreferenceController(cartWithSing);
       response.turns = pendingTurns.success;
       res.status(200).json(response);
 
-      setTimeout(() => {
-        createTurnController(arrayItems);
-      }, 200000);
+      if (pendingTurns.success) {
+        console.log("entreeeee");
+
+        setTimeout(() => {
+          toFreeTurnsController(pendingTurns.success);
+        }, 200000);
+      }
     } else {
       res.status(200).json(pendingTurns);
     }

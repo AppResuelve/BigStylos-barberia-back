@@ -11,10 +11,11 @@ const pendingTurnsController = async (arrayItems) => {
   var newTres = null;
 
   var errors = [];
+  var success = [];
 
   try {
     const processItem = async (item) => {
-      const { ini, day, month, user, service, worker } = item;
+      const { ini, day, month, user, service, worker, quantity } = item;
       var documents = [];
       for (let i = 0; i < item.worker.length; i++) {
         let document = await WorkDay.aggregate([
@@ -58,12 +59,12 @@ const pendingTurnsController = async (arrayItems) => {
           documents.push(document[0]);
         }
       }
-      if (item.quantity > documents.length) {
+      if (quantity > documents.length) {
         errors.push(item); // Guardar el error para el front
       } else {
         let selectedDocuments;
 
-        if (item.quantity < documents.length) {
+        if (quantity < documents.length) {
           selectedDocuments = [];
           let tempDocs = [...documents];
           while (selectedDocuments.length < item.quantity) {
@@ -100,6 +101,11 @@ const pendingTurnsController = async (arrayItems) => {
             _id: doc._id,
             updatedTime,
             updatedServices: doc.services,
+            ini,
+            end: end[0],
+            service,
+            user,
+            
           };
         });
 
@@ -138,18 +144,28 @@ const pendingTurnsController = async (arrayItems) => {
               },
             },
           });
+          delete doc.updatedTime; // Eliminar la propiedad updatedTime para que el front no guarde tanta info en las cookies, luego,
+                                  // si mp resulta en error, se podra hacer la solicitud sin problemas de tamaño de payload
         });
       };
 
-      if (newUno) prepareBulkOperations(newUno);
-      if (newDos) prepareBulkOperations(newDos);
-      if (newTres) prepareBulkOperations(newTres);
+      if (newUno) {
+        success.push(newUno);
+        prepareBulkOperations(newUno);
+      }
+      if (newDos) {
+        success.push(newDos);
+        prepareBulkOperations(newDos);
+      }
+      if (newTres) {
+        success.push(newTres);
+        prepareBulkOperations(newTres);
+      }
 
       if (bulkOperations.length > 0) {
         await WorkDay.bulkWrite(bulkOperations);
       }
-      let success = { success: arrayItems };
-      return success;
+      return { success: success };
     }
   } catch (error) {
     console.error("Error al reservar turno (controller):", error);

@@ -14,11 +14,12 @@ const createPreference = async (req, res) => {
       res.status(200).json(response);
 
       if (pendingTurns.success) {
-        console.log("entreeeee");
-
+        
         setTimeout(() => {
+          console.log("entreeeee setTimeout");
+
           toFreeTurnsController(pendingTurns.success);
-        }, 200000);
+        }, 60000);
       }
     } else {
       res.status(200).json(pendingTurns);

@@ -59,8 +59,9 @@ const pendingTurnsController = async (arrayItems) => {
           documents.push(document[0]);
         }
       }
+
       if (quantity > documents.length) {
-        errors.push(item); // Guardar el error para el front
+        errors.push(item);
       } else {
         let selectedDocuments;
 
@@ -97,15 +98,18 @@ const pendingTurnsController = async (arrayItems) => {
             service.available = corroborate(updatedTime, service.duration);
           });
 
+          // Marcar turn como true si se agenda el turno
+          let turn = true;
+
           return {
             _id: doc._id,
             updatedTime,
             updatedServices: doc.services,
+            turn,
             ini,
             end: end[0],
             service,
             user,
-            
           };
         });
 
@@ -126,8 +130,7 @@ const pendingTurnsController = async (arrayItems) => {
     }
 
     if (errors.length > 0) {
-      let errorsResult = { errors: errors };
-      return errorsResult;
+      return { errors: errors };
     } else {
       let bulkOperations = [];
 
@@ -139,13 +142,12 @@ const pendingTurnsController = async (arrayItems) => {
               update: {
                 $set: {
                   time: doc.updatedTime,
-                  services: doc.updatedServices.updatedServices,
+                  services: doc.updatedServices,
+                  turn: doc.turn,
                 },
               },
             },
           });
-          delete doc.updatedTime; // Eliminar la propiedad updatedTime para que el front no guarde tanta info en las cookies, luego,
-                                  // si mp resulta en error, se podra hacer la solicitud sin problemas de tamaño de payload
         });
       };
 

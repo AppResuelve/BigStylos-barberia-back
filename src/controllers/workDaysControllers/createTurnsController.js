@@ -96,10 +96,14 @@ const createTurnController = async (arrayItems) => {
             service.available = corroborate(updatedTime, service.duration);
           });
 
+          // Marcar turn como true si se agenda el turno
+          let turn = true;
+
           return {
             _id: doc._id,
             updatedTime,
             updatedServices: doc.services,
+            turn, // Incluye la propiedad turn
           };
         });
 
@@ -133,7 +137,8 @@ const createTurnController = async (arrayItems) => {
               update: {
                 $set: {
                   time: doc.updatedTime,
-                  services: doc.updatedServices.updatedServices,
+                  services: doc.updatedServices,
+                  turn: doc.turn, // Actualiza la propiedad turn
                 },
               },
             },

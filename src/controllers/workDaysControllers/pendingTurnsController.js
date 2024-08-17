@@ -148,6 +148,7 @@ const pendingTurnsController = async (arrayItems) => {
               },
             },
           });
+          delete doc.updatedTime;
         });
       };
 

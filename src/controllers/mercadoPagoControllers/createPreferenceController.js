@@ -37,7 +37,7 @@ const createPreferenceController = async (arrayItems) => {
       expiration_date_to: expirationDate,
       expires: true,
       notification_url:
-        "https://3531-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
+        "https://31dd-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
     };
 
     const preference = new Preference(client);

@@ -2,8 +2,6 @@ const WorkDay = require("../../DB/models/WorkDay");
 const corroborate = require("../../helpers/corroborateDisponibility");
 
 const toFreeTurnsController = async (arrayItems) => {
-  console.log("entre en to freeeeeeeeeeeeeeeeeeeeeeee");
-
   const uno = arrayItems[0];
   const dos = arrayItems[1];
   const tres = arrayItems[2];
@@ -102,7 +100,6 @@ const toFreeTurnsController = async (arrayItems) => {
 
     if (bulkOperations.length > 0) {
       await WorkDay.bulkWrite(bulkOperations);
-      console.log("aparentemente cambie los pending");
     }
   } catch (error) {
     console.error("Error al resetear turno (controller):", error);

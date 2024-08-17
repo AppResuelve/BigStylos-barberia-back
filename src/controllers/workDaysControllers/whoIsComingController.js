@@ -3,72 +3,53 @@ const User = require("../../DB/models/User");
 
 const whoIsComingController = async (emailWorker, month, day) => {
   try {
-    const workdays = await WorkDay.findOne({ email: emailWorker, month, day });
-    if (!workdays) {
-      const error = new Error("No se encontraron días creados");
+    const workday = await WorkDay.findOne({ email: emailWorker, month, day });
+    if (!workday) {
+      const error = new Error(
+        "No se encontró el día con los datos proporcionados"
+      );
       error.statusCode = 400;
       throw error;
     }
-    var objTurns = [];
+    var arrayTurns = [];
     var arrayEmails = [];
-    var result = [];
 
-    var bandera = "";
-    var ini = 0;
-
-    for (let i = 0; i < workdays.time.length; i++) {
-      if (workdays.time[i].applicant != bandera && ini > 0) {
-        objTurns.push({ email: bandera, ini, fin: i - 1 });
-        bandera = "";
-        ini = 0;
-      }
-      if (
-        workdays.time[i].applicant != null &&
-        workdays.time[i].applicant != "free" &&
-        bandera == "" &&
-        ini == 0
-      ) {
-        bandera = workdays.time[i].applicant;
-        ini = i;
+    for (let i = 0; i < workday.time.length; i++) {
+      let element = workday.time[i];
+      if (element.applicant !== null && element.applicant !== "free") {
+        arrayTurns.push({
+          email: element.applicant,
+          ini: element.ini,
+          end: element.end,
+          service: element.service,
+        });
+        i = element.end[0] + 1;
       }
     }
 
-    objTurns.forEach((element) => {
+    arrayTurns.forEach((element) => {
       arrayEmails.push(element.email);
     });
 
     const users = await User.find({ email: { $in: arrayEmails } });
-    if (users.length < 1) {
-      objTurns.forEach((element) => {
-        result.push({
-          name: element.email,
-          ini: element.ini,
-          fin: element.fin,
-        });
-      });
-    }
-    objTurns.forEach((element) => {
-      users.forEach((user) => {
-        if (element.email == user.email) {
-          result.push({
-            email: element.email,
-            name: user.name,
-            ini: element.ini,
-            fin: element.fin,
-            phone: user.phone,
-            image: user.image,
-          });
-        } else {
-          result.push({
-            name: element.email,
-            ini: element.ini,
-            fin: element.fin,
-          });
-        }
-      });
-    });
 
-    return result;
+    arrayTurns.forEach((turn) => {
+      const user = users.find((user) => user.email === turn.email);
+      if (user) {
+        turn.name = user.name;
+        turn.phone = user.phone;
+        turn.image = user.image;
+      }
+    });
+    /*  arrayTurns contiene:
+    email: el email del cliente
+    name: el name del cliente
+    ini: el minuto de inicio de su turno
+    end: minuto final de su turno
+    phone: su cel
+    image: su imagen
+   */
+    return arrayTurns;
   } catch (error) {
     console.error("Error al obtener días laborales:", error);
     throw error;

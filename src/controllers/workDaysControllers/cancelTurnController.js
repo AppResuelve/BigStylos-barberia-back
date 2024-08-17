@@ -2,43 +2,55 @@ const WorkDay = require("../../DB/models/WorkDay");
 const corroborate = require("../../helpers/corroborateDisponibility");
 const noNullCancelledController = require("./noNullCancelledController");
 
-const cancelTurnController = async (month, day, time, emailWorker, emailClient, selectedService) => {
+const cancelTurnController = async (
+  month,
+  day,
+  ini,
+  end,
+  emailWorker,
+  emailClient,
+) => {
+
   
   try {
-    var existingDay = await WorkDay.findOne({ month, day, email: emailWorker}); // ojo, no poner array de objetos
+    var existingDay = await WorkDay.findOne({ month, day, email: emailWorker }); // ojo, no poner array de objetos
 
     if (existingDay) {
-
-      for (let i = time.ini; i <= time.fin; i++){
-        if (existingDay.time[i] == emailClient) {
-
-          existingDay.time[i] = "free"
+      for (let i = ini; i <= end; i++) {
+        if (existingDay.time[i].applicant === emailClient) {
+          existingDay.time[i].applicant = "free";
         }
       }
-      let contador = false
-      existingDay.time.forEach(element => {
-        if (element != null && element != "free") {
-          contador = true
+      existingDay.markModified("time");
+
+      let count = false;
+      existingDay.time.forEach((element) => {
+        if (element.applicant !== null && element.applicant !== "free") {
+          count = true;
         }
-      })
-      if (contador == false) {
-        existingDay.turn = false
+      });
+      if (count === false) {
+        existingDay.turn = false;
       }
 
-      const serv = Object.keys(existingDay.services)
-      serv.forEach(element => {
-          if (corroborate(existingDay.time, existingDay.services[element].duration) == true) {
-              existingDay.services[element].available = true
-          } else {
-              existingDay.services[element].available = false
-          }
-      })
-      existingDay.markModified('services');
+      const serv = Object.keys(existingDay.services);
+      serv.forEach((element) => {
+        existingDay.services[element].available = corroborate(
+          existingDay.time,
+          existingDay.services[element].duration
+        );
+      });
+      existingDay.markModified("services");
+      await existingDay.save();
 
-      const toCancelled = await noNullCancelledController([{email: emailWorker, ini: time.ini, fin: time.fin}], month, day, emailClient)
-      await existingDay.save()
-    } 
-      
+      const toCancelled = await noNullCancelledController(
+        [{ email: emailWorker, ini, end }],
+        month,
+        day,
+        emailClient
+      );
+    }
+
     return existingDay;
   } catch (error) {
     console.error("Error en el controlador de cancelacion de turno:", error);

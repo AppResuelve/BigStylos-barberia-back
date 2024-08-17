@@ -18,7 +18,7 @@ const createPreference = async (req, res) => {
         setTimeout(() => {
 
           toFreeTurnsController(pendingTurns.success);
-        }, 60000);
+        }, 200000);
       }
     } else {
       res.status(200).json(pendingTurns);

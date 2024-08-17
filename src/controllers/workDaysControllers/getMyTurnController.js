@@ -15,7 +15,7 @@ const getMyTurnsController = async (emailUser) => {
           turnResult.push({
             ini: element.ini,
             end: element.end[0],
-            worker: day.name,
+            worker: { name: day.name, email: day.email },
             day: day.day,
             month: day.month,
             service: element.requiredService,

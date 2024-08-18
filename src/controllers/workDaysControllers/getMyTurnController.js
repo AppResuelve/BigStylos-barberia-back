@@ -10,11 +10,11 @@ const getMyTurnsController = async (emailUser) => {
 
     days.forEach((day) => {
       for (let i = 0; i < day.time.length; i++) {
-        let element = day.time[i];
+        let element = day.time[i];        
         if (element.applicant === emailUser) {
           turnResult.push({
             ini: element.ini,
-            end: element.end[0],
+            end: element.end,
             worker: { name: day.name, email: day.email },
             day: day.day,
             month: day.month,

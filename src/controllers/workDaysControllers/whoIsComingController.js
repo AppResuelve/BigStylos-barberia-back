@@ -16,6 +16,7 @@ const whoIsComingController = async (emailWorker, month, day) => {
 
     for (let i = 0; i < workday.time.length; i++) {
       let element = workday.time[i];
+
       if (element.applicant !== null && element.applicant !== "free") {
         arrayTurns.push({
           email: element.applicant,
@@ -23,7 +24,7 @@ const whoIsComingController = async (emailWorker, month, day) => {
           end: element.end,
           service: element.service,
         });
-        i = element.end[0] + 1;
+        i = element.end + 1;
       }
     }
 
@@ -32,7 +33,7 @@ const whoIsComingController = async (emailWorker, month, day) => {
     });
 
     const users = await User.find({ email: { $in: arrayEmails } });
-
+    //ver como devuelve si un user esta en dos o mas posiciones del array de emails
     arrayTurns.forEach((turn) => {
       const user = users.find((user) => user.email === turn.email);
       if (user) {

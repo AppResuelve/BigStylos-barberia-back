@@ -1,8 +1,7 @@
 const cancelTurnController = require("../../controllers/workDaysControllers/cancelTurnController");
 
 const cancelTurnHandler = async (req, res) => {
-  const { month, day, ini, end, emailWorker, emailClient, selectedService } =
-    req.body;
+  const { month, day, ini, end, emailWorker, emailUser } = req.body;
   try {
     const cancelled = await cancelTurnController(
       month,
@@ -10,7 +9,7 @@ const cancelTurnHandler = async (req, res) => {
       ini,
       end,
       emailWorker,
-      emailClient,
+      emailUser
     );
     res.status(200).json(cancelled);
   } catch (error) {

@@ -43,12 +43,12 @@ const cancelTurnController = async (
       existingDay.markModified("services");
       await existingDay.save();
 
-      const toCancelled = await noNullCancelledController(
-        [{ email: emailWorker, ini, end }],
-        month,
-        day,
-        emailClient
-      );
+      // const toCancelled = await noNullCancelledController(
+      //   [{ email: emailWorker, ini, end }],
+      //   month,
+      //   day,
+      //   emailClient
+      // );
     }
 
     return existingDay;

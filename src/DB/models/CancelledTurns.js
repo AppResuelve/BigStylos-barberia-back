@@ -10,28 +10,40 @@ const CancelledTurnsSchema = new Schema(
         type: Number,
         required: true,
       },
-    name: {
-      type: String,
-      required: false,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-    },
-    turn: {
-        type: Object,
-        required: true,
-    },
-    howCancelled: {
+      emailWorker: {
         type: String,
         required: true,
+      },
+      nameWorker: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      turn: {
+        type: Object,
+        required: true,
+      },
+      emailUser: {
+        type: String,
+        required: true,
+      },
+      nameUser: {
+        type: String,
+        required: false,
+      },
+      howCancelled: {
+        type: String,
+        required: true
+      },
+      service: {
+        type: Object,
+        required: true
+      },
     },
-  },
-  {
+    {
     timestamps: true,
   }
 );

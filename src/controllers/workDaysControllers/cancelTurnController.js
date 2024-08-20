@@ -1,6 +1,6 @@
 const WorkDay = require("../../DB/models/WorkDay");
+const CancelledTurns = require("../../DB/models/CancelledTurns")
 const corroborate = require("../../helpers/corroborateDisponibility");
-const noNullCancelledController = require("./noNullCancelledController");
 
 const cancelTurnController = async (
   month,
@@ -9,7 +9,19 @@ const cancelTurnController = async (
   end,
   emailWorker,
   emailUser,
+  nameWorker,
+  nameUser,
+  service,
+  
 ) => {
+  /*  month: turn.month,
+        day: turn.day,
+        ini: turn.ini,
+        end: turn.end,
+        emailWorker: turn.worker.email,
+        nameWorker: turn.worker.name,
+        emailUser: userData.email,
+        nameUser: userData.name */
   try {
     // Buscar el documento del día laboral del trabajador específico
     const existingDay = await WorkDay.findOne({
@@ -46,21 +58,31 @@ const cancelTurnController = async (
         service.available = corroborate(existingDay.time, service.duration);
       });
 
+      
+      const newTurnCancelled = new CancelledTurns({
+        month,
+        day,
+        emailWorker,
+        nameWorker,
+        emailUser,
+        nameUser,
+        phone: existingDay.phone ? existingDay.phone : "no requerido",
+        turn: {
+          ini,
+          end
+        },
+        howCancelled: emailUser,
+        service,
+      });
+      
+      await newTurnCancelled.save();
       // Marcar el campo 'time' y 'services' como modificados para que Mongoose lo tenga en cuenta al guardar
       existingDay.markModified("time");
       existingDay.markModified("services");
 
       // Guardar los cambios en la base de datos
       await existingDay.save();
-
-
-      const toCancelled = await noNullCancelledController(
-        [{ email: emailWorker, ini, end }],
-        month,
-        day,
-        emailUser
-      );
-
+      
       return existingDay;
     } else {
       throw new Error(

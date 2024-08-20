@@ -5,10 +5,18 @@ const noNullCancelledController = async (turnsCancelled, month, day, emailCancel
   try {
     const emailsToSearch = turnsCancelled.map((turnCancelled) => turnCancelled.email);
     const existingUsers = await User.find({ email: { $in: emailsToSearch } }); // ojo, no poner array de objetos
-      
+      console.log(turnsCancelled, '<-----------turnsCancelled')
+      /* [
+        {
+          email: 'hellsingsd@gmail.com',
+          ini: 480,
+          fin: 509,
+          name: amsodmaod,
+          requiredService: { name: 'mate', img: '', price: '50', sing: '' }
+        }
+      ] */
         for (const turnCancelled of turnsCancelled) {
             const { email, ini, fin } = turnCancelled;
-      
             const existingUser = existingUsers.find((user) => user.email === email);
       
             if (existingUser) {
@@ -16,7 +24,7 @@ const noNullCancelledController = async (turnsCancelled, month, day, emailCancel
               const newTurnCancelled = new CancelledTurns({
                 month,
                 day,
-                /* name: existingUser.name,  aca iria el name cuando tengamos */
+                name: existingUser.name,
                 email,
                 phone: existingUser.phone ? existingUser.phone : "no requerido",
                 turn: {

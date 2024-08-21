@@ -20,7 +20,7 @@ const getMyTurnsController = async (emailUser) => {
             month: day.month,
             service: element.requiredService,
           });
-          i = element.end[0] + 1; // verificar si hace falta el + 1 
+          i = element.end[0]; // verificar si hace falta el + 1 
         }
       }
     });

@@ -21,7 +21,7 @@ const createPreferenceController = async (arrayItems) => {
 
   const now = new Date();
   // Establece la fecha y hora de expiración (2 minutos en el futuro)
-  const expirationDate = new Date(now.getTime() + 2 * 60000).toISOString();
+  const expirationDate = new Date(now.getTime() + 5 * 60000).toISOString();
 
   try {
     const body = {

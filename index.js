@@ -12,9 +12,9 @@ connectDB()
     server.listen(PORT, () => {
       console.log(`Server listening on port: ${PORT}`);
       
-      // Configurar la tarea cron para que se ejecute a las 00:00 cada día
-      cron.schedule('57 14 * * *', () => {
-        console.log('Running cleanup job at 00:00');
+      // Configurar la tarea cron para que se ejecute a las 00:01 cada día
+      cron.schedule('1 0 * * *', () => {
+        console.log('Running cleanup job at 00:01');
         deleteOld();
       });
     });

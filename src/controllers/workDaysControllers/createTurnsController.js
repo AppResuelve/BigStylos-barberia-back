@@ -14,9 +14,9 @@ const createTurnController = async (arrayItems) => {
   var errors = [];
 
   try {
+    var documents = [];
     const processItem = async (item) => {
       const { ini, day, month, user, service, worker } = item;
-      var documents = [];
       for (let i = 0; i < item.worker.length; i++) {
         let document = await WorkDay.aggregate([
           {
@@ -106,7 +106,7 @@ const createTurnController = async (arrayItems) => {
             turn, // Incluye la propiedad turn
           };
         });
-
+        console.log(updatedDocuments, 'esto es lo q devuelve---------------')
         return updatedDocuments;
       }
     };

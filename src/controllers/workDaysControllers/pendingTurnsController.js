@@ -14,9 +14,9 @@ const pendingTurnsController = async (arrayItems) => {
   var success = [];
 
   try {
+    var documents = [];
     const processItem = async (item) => {
       const { ini, day, month, user, service, worker, quantity } = item;
-      var documents = [];
       for (let i = 0; i < item.worker.length; i++) {
         let document = await WorkDay.aggregate([
           {

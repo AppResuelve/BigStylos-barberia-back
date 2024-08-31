@@ -74,7 +74,6 @@ const updateNoWorkController = async (noWorkDays) => {
 
     const schedule = await Schedule.findOne();
     if (schedule) {
-      console.log(schedule, 'schedule--------------------------------------');
       var existingNoWorkDays = schedule.noWorkDays || {};
 
       // Combinar las fechas existentes con las nuevas fechas recibidas
@@ -92,13 +91,14 @@ const updateNoWorkController = async (noWorkDays) => {
 
       // Actualizar el campo noWorkDays
       schedule.noWorkDays = existingNoWorkDays;
-
+      // Marcar el campo noWorkDays como modificado
+      schedule.markModified("noWorkDays");
       // Guardar el documento y capturar cualquier error
       try {
         await schedule.save();
-        console.log('Schedule updated successfully.');
+        console.log("Schedule updated successfully.");
       } catch (saveError) {
-        console.error('Error saving schedule:', saveError);
+        console.error("Error saving schedule:", saveError);
       }
     }
 

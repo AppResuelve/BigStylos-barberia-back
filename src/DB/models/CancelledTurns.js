@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const CancelledTurnsSchema = new Schema(
   {
-    month: {
+    month: { 
         type: Number,
         required: true,
       },

@@ -1,29 +1,29 @@
 const WorkDay = require("../../DB/models/WorkDay");
-const myTurnsOfDay = require("../../helpers/myTurnsOfDay");
 
 const getMyTurnsController = async (emailUser) => {
-
-    try {
-    
-    let turnResult = []
+  try {
+    let turnResult = [];
 
     const days = await WorkDay.find({
-      'time': { $in: [emailUser] }
+      time: { $elemMatch: { applicant: emailUser } },
     });
-    
-    days.forEach(day => {
-        
-        const result = myTurnsOfDay(day.time, emailUser)
-        result.forEach(element => {
-            turnResult.push({
-                day: day.day,
-                month: day.month,
-                hourTime: element,
-                worker: day.email
-            })
-        })
 
-    })
+    days.forEach((day) => {
+      for (let i = 0; i < day.time.length; i++) {
+        let element = day.time[i];        
+        if (element.applicant === emailUser) {
+          turnResult.push({
+            ini: element.ini,
+            end: element.end,
+            worker: { name: day.name, email: day.email },
+            day: day.day,
+            month: day.month,
+            service: element.requiredService,
+          });
+          i = element.end; // verificar si hace falta el + 1 
+        }
+      }
+    });
 
     return turnResult;
   } catch (error) {

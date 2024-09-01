@@ -1,13 +1,30 @@
 const createPreferenceController = require("../../controllers/mercadoPagoControllers/createPreferenceController");
+const pendingTurnsController = require("../../controllers/workDaysControllers/pendingTurnsController");
+const toFreeTurnsController = require("../../controllers/workDaysControllers/toFreeTurnsController");
 
 const createPreference = async (req, res) => {
-  const { arrayItems } = req.body;
+  const { cartWithSing, arrayItems } = req.body;
 
   try {
-    const preference = await createPreferenceController(arrayItems);
-    res.status(200).json(preference );
+    const pendingTurns = await pendingTurnsController(arrayItems);
+
+    if (pendingTurns.success) {
+      let response = await createPreferenceController(cartWithSing);
+      response.turns = pendingTurns.success;
+      res.status(200).json(response);
+
+      if (pendingTurns.success) {
+        
+        setTimeout(() => {
+
+          toFreeTurnsController(pendingTurns.success);
+        }, 200000);
+      }
+    } else {
+      res.status(200).json(pendingTurns);
+    }
   } catch (error) {
-    res.status(500).json({ message: "Error creating user." });
+    res.status(500).json({ message: "Error taking the turn." });
   }
 };
 

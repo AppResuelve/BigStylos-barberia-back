@@ -1,8 +1,6 @@
-//import { MercadoPagoConfig, Preference } from "mercadopago";
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const axios = require("axios");
 
 const createPreferenceController = async (arrayItems) => {
   var items = [];
@@ -23,14 +21,14 @@ const createPreferenceController = async (arrayItems) => {
 
   const now = new Date();
   // Establece la fecha y hora de expiración (2 minutos en el futuro)
-  const expirationDate = new Date(now.getTime() + 2 * 60000).toISOString();
+  const expirationDate = new Date(now.getTime() + 5 * 60000).toISOString();
 
   try {
     const body = {
       items,
       back_urls: {
-        success: `${FRONTEND_URL}/`,
-        failure: `${FRONTEND_URL}/requestDenied401`,
+        success: `${FRONTEND_URL}/turns`,
+        failure: `${FRONTEND_URL}/`,
         pending:
           "https://www.youtube.com/watch?v=waiu1gimdy8&list=RDwaiu1gimdy8&start_radio=1",
       },
@@ -39,15 +37,17 @@ const createPreferenceController = async (arrayItems) => {
       expiration_date_to: expirationDate,
       expires: true,
       notification_url:
-        "https://3531-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
+        "https://31dd-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
     };
 
     const preference = new Preference(client);
     const result = await preference.create({ body });
-    setTimeout(() => {
-    }, 10000);
+    // setTimeout(() => {}, 10000);
 
-    return result.sandbox_init_point;
+    return {
+      init_point: result.sandbox_init_point,
+      preference_id: result.id,
+    };
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
     throw error;

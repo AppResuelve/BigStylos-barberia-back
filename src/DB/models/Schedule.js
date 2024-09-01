@@ -13,6 +13,7 @@ const CreateSchedule = new Schema(
   },
   {
     timestamps: true,
+    minimize: false,
   }
 );
 

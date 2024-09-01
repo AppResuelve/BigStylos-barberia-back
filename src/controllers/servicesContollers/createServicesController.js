@@ -9,7 +9,6 @@ const createServicesController = async (
   type
 ) => {
   try {
-
     const lowerCaseService = service.toLowerCase();
     const lowerCaseCategory = category.toLowerCase();
 
@@ -99,7 +98,7 @@ const createServicesController = async (
         }
         if (!user.services[lowerCaseService]) {
           user.services[lowerCaseService] = {
-            duration: null,
+            duration: 0,
             available: false,
           };
           user.markModified("services");

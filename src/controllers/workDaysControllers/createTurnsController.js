@@ -14,9 +14,9 @@ const createTurnController = async (arrayItems) => {
   var errors = [];
 
   try {
+    var documents = [];
     const processItem = async (item) => {
       const { ini, day, month, user, service, worker } = item;
-      var documents = [];
       for (let i = 0; i < item.worker.length; i++) {
         let document = await WorkDay.aggregate([
           {
@@ -96,13 +96,17 @@ const createTurnController = async (arrayItems) => {
             service.available = corroborate(updatedTime, service.duration);
           });
 
+          // Marcar turn como true si se agenda el turno
+          let turn = true;
+
           return {
             _id: doc._id,
             updatedTime,
             updatedServices: doc.services,
+            turn, // Incluye la propiedad turn
           };
         });
-
+        console.log(updatedDocuments, 'esto es lo q devuelve---------------')
         return updatedDocuments;
       }
     };
@@ -133,7 +137,8 @@ const createTurnController = async (arrayItems) => {
               update: {
                 $set: {
                   time: doc.updatedTime,
-                  services: doc.updatedServices.updatedServices,
+                  services: doc.updatedServices,
+                  turn: doc.turn, // Actualiza la propiedad turn
                 },
               },
             },
@@ -149,9 +154,9 @@ const createTurnController = async (arrayItems) => {
       if (bulkOperations.length > 0) {
         await WorkDay.bulkWrite(bulkOperations);
       }
+      let success = { success: arrayItems };
+      return success;
     }
-    let success = { success: arrayItems };
-    return success;
   } catch (error) {
     console.error("Error al reservar turno (controller):", error);
     throw error;

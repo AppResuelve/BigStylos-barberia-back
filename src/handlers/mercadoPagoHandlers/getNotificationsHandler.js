@@ -21,7 +21,9 @@ const getNotificationsHandler = async (req, res) => {
       if (response) {
         const data = await response.json();
 
-        console.log(data.additional_info.items, "este es el data");
+        console.log(data, "este es el data");
+        console.log(data.additional_info.items, "este es el data itemsssss");
+        
       }
 
       res.sendStatus(200);

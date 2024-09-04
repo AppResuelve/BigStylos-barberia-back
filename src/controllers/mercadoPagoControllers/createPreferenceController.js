@@ -2,9 +2,10 @@ const { MercadoPagoConfig, Preference } = require("mercadopago");
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
-const createPreferenceController = async (arrayItems) => {
+const createPreferenceController = async (cartWithSing, arrayItems) => {
   var items = [];
-  arrayItems.forEach((item) => {
+
+  cartWithSing.forEach((item) => {
     let id = `${item.id}+${item.worker[0]}`;
     items.push({
       title: item.service.name,
@@ -36,13 +37,15 @@ const createPreferenceController = async (arrayItems) => {
       expiration_date_from: now.toISOString(),
       expiration_date_to: expirationDate,
       expires: true,
+      metadata: {
+        arrayItems,
+      },
       notification_url:
-        "https://31dd-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
+        "https://bb13-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
     };
 
     const preference = new Preference(client);
     const result = await preference.create({ body });
-    // setTimeout(() => {}, 10000);
 
     return {
       init_point: result.sandbox_init_point,

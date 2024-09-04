@@ -1,44 +1,62 @@
+const User = require("../../DB/models/User");
 const WorkDay = require("../../DB/models/WorkDay");
-const noNullCancelledController = require("./noNullCancelledController");
+const CancelledTurns = require("../../DB/models/CancelledTurns");
 
 const deleteDaysController = async (month, day, email, name) => {
   try {
-    // Buscar y eliminar el documento WorkDay correspondiente
-    const existing = await WorkDay.findOneAndDelete({ month, day, email });
+    // Buscar el documento WorkDay correspondiente sin eliminarlo
+    const existing = await WorkDay.findOne({ month, day, email });
 
     if (!existing) {
       throw new Error("No se encontró un día laboral con las propiedades proporcionadas.");
     }
 
-    let noNull = [];
+    let forDelete = [];
 
     // Si hay turnos agendados (turn = true)
     if (existing.turn === true) {
-      // Usar un bucle for en lugar de forEach
       for (let i = 0; i < existing.time.length; i++) {
-        let element = existing.time[i];
+        let applicant = existing.time[i].applicant;
 
-        if (element.applicant && element.applicant !== "free" && element.applicant !== null) {
+        if (applicant && applicant.startsWith("pending-")) {
+          throw new Error("Hay un pago en proceso, inténtelo en unos minutos");
+        }
+
+        if (applicant && applicant !== "free" && applicant !== null) {
+          const user = await User.findOne({ email: applicant });
+
           // Crear un objeto con la información del turno cancelado
-          noNull.push({
-            email: element.applicant,
-            name:name,
-            image: element.image,
-            ini: element.ini,
-            fin: element.end,
-            requiredService: element.requiredService
+          forDelete.push({
+            month: existing.month,
+            day: existing.day,
+            emailWorker: existing.email,
+            nameWorker: existing.name,
+            phone: user.phone ? user.phone : "no requerido",
+            turn: {
+              ini: existing.time[i].ini,
+              end: existing.time[i].end,
+            },
+            emailUser: user.email,
+            nameUser: user.name,
+            howCancelled: applicant,
+            service: existing.time[i].requiredService,
           });
-          i = element.end + 1;
+          i = existing.time[i].end + 1; // Avanzar el índice para evitar procesar nuevamente el mismo turno
         }
       }
-
-      // Llamar al controlador noNullCancelledController con los turnos cancelados
-      const cancelledTurns = await noNullCancelledController(noNull, month, day, email);
     }
 
-    return noNull;
+    // Si hay turnos a cancelar, insertarlos en la colección CancelledTurns
+    if (forDelete.length > 0) {
+      await CancelledTurns.insertMany(forDelete);
+    }
+
+    // Eliminar el documento WorkDay correspondiente después de guardar los turnos cancelados
+    await WorkDay.findOneAndDelete({ month, day, email });
+
+    return forDelete;
   } catch (error) {
-    console.error("Error al eliminar día laboral:", error);
+    console.error("Error al procesar día laboral:", error);
     throw error;
   }
 };

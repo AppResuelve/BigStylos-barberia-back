@@ -35,7 +35,7 @@ const updateNoWorkCancelTurnController = async (noWorkDays) => {
     }
 
     if (workdaysToCancel.length === 0) {
-      console.log("No se encontraron workdays para las fechas especificadas.");
+      throw new Error("No se encontraron workdays para la fecha solicitada.");
     }
 
     for (const workday of workdaysWithTurnTrue) {
@@ -98,7 +98,6 @@ const updateNoWorkCancelTurnController = async (noWorkDays) => {
       // Guardar el documento y capturar cualquier error
       try {
         await schedule.save();
-        console.log("Schedule updated successfully.");
       } catch (saveError) {
         console.error("Error saving schedule:", saveError);
       }

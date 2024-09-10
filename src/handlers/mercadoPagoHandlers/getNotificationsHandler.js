@@ -13,9 +13,7 @@ const getNotificationsHandler = async (req, res) => {
       .get({
         id: paymentId,
       })
-      .then((response) => {
-       
-      })
+      .then((response) => {})
       .catch((error) => {
         console.log(error);
       });

@@ -21,7 +21,7 @@ const getScheduleController = async () => {
           5: { open: 0, close: 1440 },
           6: { open: 0, close: 1440 },
         },
-        noWorkDays: { prop: "init" },
+        noWorkDays: {},
       });
       await newSchedule.save();
       return newSchedule;

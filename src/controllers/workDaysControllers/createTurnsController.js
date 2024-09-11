@@ -106,7 +106,6 @@ const createTurnController = async (arrayItems) => {
             turn, // Incluye la propiedad turn
           };
         });
-        console.log(updatedDocuments, 'esto es lo q devuelve---------------')
         return updatedDocuments;
       }
     };

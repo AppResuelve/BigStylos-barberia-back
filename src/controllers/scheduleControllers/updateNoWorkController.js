@@ -41,7 +41,6 @@ const updateNoWorkController = async (noWorkDays) => {
       // Guardar el documento y capturar cualquier error
       try {
         await schedule.save();
-        console.log("Schedule updated successfully.");
       } catch (saveError) {
         console.error("Error saving schedule:", saveError);
       }

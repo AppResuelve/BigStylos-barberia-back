@@ -9,13 +9,17 @@ const deleteServicesController = async (services) => {
       return { message: "No existen servicios en la colección." };
     }
 
-    const servicesToDelete = services.map(service => service.toLowerCase());
-    
+    const servicesToDelete = services.map((service) => service.toLowerCase());
+
     // Crear una copia de existingServiceDoc.services y filtrar los servicios a eliminar
     const filteredServices = {};
-    for (const [category, categoryServices] of Object.entries(existingServiceDoc.services)) {
+    for (const [category, categoryServices] of Object.entries(
+      existingServiceDoc.services
+    )) {
       filteredServices[category] = {};
-      for (const [serviceName, serviceDetails] of Object.entries(categoryServices)) {
+      for (const [serviceName, serviceDetails] of Object.entries(
+        categoryServices
+      )) {
         if (!servicesToDelete.includes(serviceName.toLowerCase())) {
           filteredServices[category][serviceName] = serviceDetails;
         }
@@ -31,7 +35,7 @@ const deleteServicesController = async (services) => {
 
     // Preparar la actualización para eliminar los servicios de todos los usuarios
     const update = {};
-    servicesToDelete.forEach(service => {
+    servicesToDelete.forEach((service) => {
       update[`services.${service}`] = 1;
     });
 
@@ -40,11 +44,12 @@ const deleteServicesController = async (services) => {
     const userUpdateResult = await User.updateMany({}, { $unset: update });
 
     // Actualizar el documento de servicios con los servicios filtrados
-    existingServiceDoc.services = Object.keys(filteredServices).length > 0 ? filteredServices : {};
+    existingServiceDoc.services =
+      Object.keys(filteredServices).length > 0 ? filteredServices : {};
 
     // Marcar la modificación y guardar el documento de servicios
     existingServiceDoc.markModified("services");
-    const saveResult = await existingServiceDoc.save();
+    await existingServiceDoc.save();
 
     // Agregar logs detallados después de guardar
 

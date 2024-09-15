@@ -8,7 +8,7 @@ const updateUserHandler = async (req, res) => {
       newServicesDuration,
       newPhoneNumber
     );
-    res.status(200).json({ message: "Cambio al usuario realizado con exito" });
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Error al intentar cambiar usuario" });
   }

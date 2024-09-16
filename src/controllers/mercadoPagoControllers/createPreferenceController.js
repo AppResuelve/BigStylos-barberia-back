@@ -41,7 +41,7 @@ const createPreferenceController = async (cartWithSing, pending) => {
         pending,
       },
       notification_url:
-        "https://cdec-181-93-134-26.ngrok-free.app/mercadopago/mp_notifications",
+        "https://appturnos-back.onrender.com/mercadopago/mp_notifications",
     };
 
     const preference = new Preference(client);

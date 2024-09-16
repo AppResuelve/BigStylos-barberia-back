@@ -1,4 +1,5 @@
 const { MercadoPagoConfig, Payment } = require("mercadopago");
+const pendingToConfirmController = require("../../controllers/workDaysControllers/pendingToConfirmController");
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 
 const client = new MercadoPagoConfig({
@@ -13,7 +14,13 @@ const getNotificationsHandler = async (req, res) => {
       .get({
         id: paymentId,
       })
-      .then((response) => {})
+      .then((response) => {
+       if(response) {
+        console.log(response.metadata.pending, '--------------response.metadata')
+        let result = pendingToConfirmController(response.metadata.pending)
+       }
+       
+      })
       .catch((error) => {
         console.log(error);
       });

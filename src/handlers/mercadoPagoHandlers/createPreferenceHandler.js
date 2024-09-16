@@ -9,7 +9,8 @@ const createPreference = async (req, res) => {
     const pendingTurns = await pendingTurnsController(arrayItems);
 
     if (pendingTurns.success) {
-      let response = await createPreferenceController(cartWithSing, arrayItems);
+      let pending = pendingTurns.success
+      let response = await createPreferenceController(cartWithSing, pending);
       response.turns = pendingTurns.success;
       res.status(200).json(response);
 

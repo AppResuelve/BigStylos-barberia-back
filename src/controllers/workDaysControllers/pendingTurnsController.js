@@ -110,6 +110,9 @@ const pendingTurnsController = async (arrayItems) => {
             end: end[0],
             service,
             user,
+            worker: doc.email,
+            month: doc.month,
+            day: doc.day,
           };
         });
 

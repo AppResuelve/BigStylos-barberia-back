@@ -10,7 +10,7 @@ const createPreferenceController = async (cartWithSing, pending) => {
     items.push({
       title: item.service.name,
       quantity: Number(item.quantity),
-      unit_price: Number(item.service.price),
+      unit_price: Number(item.service.sing),
       currency_id: "ARS",
       id,
     });

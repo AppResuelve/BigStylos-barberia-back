@@ -7,18 +7,20 @@ const pendingToConfirmController = async (pending) => {
   try {
     // Función para obtener los WorkDays y editar los turnos pendientes
     const wantDays = async (prop) => {
+      console.log(prop,"este es el prop dentro de la funcion");
+      
       const { ini, end, day, month, user, worker } = prop;
 
       try {
         // Buscar el documento WorkDay para el trabajador y el día/mes
         const workday = await WorkDay.findOne({
-          email: worker.email,
+          email: worker,
           day: day,
           month: month,
         });
 
         if (!workday) {
-          throw new Error(`No se encontró WorkDay para el trabajador ${worker.email}`);
+          throw new Error(`No se encontró WorkDay para el trabajador ${worker}`);
         }
 
         // Bandera para saber si hemos modificado el array 'time'
@@ -36,7 +38,7 @@ const pendingToConfirmController = async (pending) => {
           } else {
             // Si no se cumple la condición, guardamos el error
             errors.push({
-              worker: worker.email,
+              worker: worker,
               day,
               index: i,
               message: `No se encontró un turno pendiente en el índice ${i} para ${user}`,
@@ -49,7 +51,7 @@ const pendingToConfirmController = async (pending) => {
           workday.markModified('time');
           await workday.save(); // Guardamos los cambios
           updatedDays.push({
-            worker: worker.email,
+            worker: worker,
             day,
             status: "updated",
           });
@@ -57,7 +59,7 @@ const pendingToConfirmController = async (pending) => {
       } catch (error) {
         // Capturamos cualquier error y lo agregamos a la lista de errores
         errors.push({
-          worker: worker.email,
+          worker: worker,
           day,
           message: error.message,
         });
@@ -65,7 +67,7 @@ const pendingToConfirmController = async (pending) => {
     };
 
     // Creamos un array de promesas para ejecutar todas las modificaciones en paralelo
-    const promises = pending.map((item) => wantDays(item));
+    const promises = pending.map((item) => wantDays(item[0]));
 
     // Esperamos a que todas las promesas se resuelvan
     await Promise.all(promises);

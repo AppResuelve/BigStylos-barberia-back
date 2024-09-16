@@ -15,7 +15,6 @@ const getNotificationsHandler = async (req, res) => {
         id: paymentId,
       })
       .then((response) => {
-       console.log(response, 'response mercado pago===================')
        if(response) {
         console.log(response.metadata.pending, '--------------response.metadata')
         let result = pendingToConfirmController(response.metadata.pending)

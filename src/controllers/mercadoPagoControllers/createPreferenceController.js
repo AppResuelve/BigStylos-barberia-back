@@ -48,7 +48,7 @@ const createPreferenceController = async (cartWithSing, pending) => {
     const result = await preference.create({ body });
 
     return {
-      init_point: result.sandbox_init_point,
+      init_point: result.init_point,
       preference_id: result.id,
     };
   } catch (error) {

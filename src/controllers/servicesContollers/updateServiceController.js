@@ -62,10 +62,12 @@ const updateServiceController = async (
       var users = await User.find();
       for (var user of users) {
         if (user.services[prevLowerCase]) {
-          user.services[currentLowerCase] = user.services[prevLowerCase];
-          delete user.services[prevLowerCase];
-          user.markModified("services");
-          await user.save();
+          if (currentLowerCase !== prevLowerCase) {
+            user.services[currentLowerCase] = user.services[prevLowerCase];
+            delete user.services[prevLowerCase];
+            user.markModified("services");
+            await user.save();
+          }
         }
       }
     }

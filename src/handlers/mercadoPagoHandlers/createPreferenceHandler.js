@@ -5,6 +5,11 @@ const toFreeTurnsController = require("../../controllers/workDaysControllers/toF
 const createPreference = async (req, res) => {
   const { cartWithSing, arrayItems } = req.body;
 
+<<<<<<< HEAD
+  //console.log( cartWithSing, arrayItems, 'estas son las props-----------')
+
+=======
+>>>>>>> 59de9e7a7c4e2970fef49adf758487ae273e5a05
   try {
     const pendingTurns = await pendingTurnsController(arrayItems);
 

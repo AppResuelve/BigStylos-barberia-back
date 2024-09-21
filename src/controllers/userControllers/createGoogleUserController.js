@@ -20,6 +20,10 @@ const createGoogleUserController = async (name, email, image) => {
         isDelete: existingGoogleUser.isDelete,
         phone: existingGoogleUser.phone,
         services: existingGoogleUser.services,
+        pushToken: existingGoogleUser.notifications
+          ? existingGoogleUser.pushToken
+          : null,
+        notifications: existingGoogleUser.notifications,
       };
     } else {
       const newGoogleUser = new User({
@@ -31,6 +35,8 @@ const createGoogleUserController = async (name, email, image) => {
         isDelete: false,
         phone: "",
         services: {}, // Inicializa con un objeto vacío
+        pushToken: null,
+        notifications: false,
       });
 
       const existingServiceDoc = await Services.findOne({});
@@ -40,19 +46,22 @@ const createGoogleUserController = async (name, email, image) => {
 
         for (const category in existingServiceDoc.services) {
           const categoryServices = existingServiceDoc.services[category];
-          if (typeof categoryServices === 'object' && categoryServices !== null) {
+          if (
+            typeof categoryServices === "object" &&
+            categoryServices !== null
+          ) {
             for (const service in categoryServices) {
               servicesObject[service] = { duration: null, available: false };
             }
           }
         }
-        console.log(servicesObject, "esto es servicesObject")
+        console.log(servicesObject, "esto es servicesObject");
         newGoogleUser.services = servicesObject;
       }
 
       // Guardar el nuevo usuario en la base de datos
       await newGoogleUser.save();
-      console.log(newGoogleUser.services, "esto es newGoogleUser.ser")
+      console.log(newGoogleUser.services, "esto es newGoogleUser.ser");
       return {
         id: newGoogleUser.id,
         name: newGoogleUser.name,

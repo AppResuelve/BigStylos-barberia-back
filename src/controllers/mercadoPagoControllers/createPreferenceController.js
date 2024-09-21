@@ -29,7 +29,7 @@ const createPreferenceController = async (cartWithSing, pending) => {
     const body = {
       items,
       back_urls: {
-        success: `${FRONTEND_URL}/turns`,
+        success: `${FRONTEND_URL}/`,
         failure: `${FRONTEND_URL}/`,
         pending:
           "https://www.youtube.com/watch?v=waiu1gimdy8&list=RDwaiu1gimdy8&start_radio=1",

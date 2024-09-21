@@ -15,7 +15,10 @@ const createUserController = async (name, email, image) => {
         admin: false,
         worker: false,
         isDelete: false,
-        phone:""
+        phone: "",
+        services: {}, // Inicializa con un objeto vacío
+        pushToken: null,
+        notifications: false,
       });
       const existingService = await Services.findOne({}); // trae array de strings con servicios
       const servicesList = existingService ? existingService.allServices : [];

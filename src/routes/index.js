@@ -7,6 +7,7 @@ const scheduleRoutes = require("./routes/scheduleRoutes.js");
 const personalizationRoutes = require("./routes/personalizationRoutes.js");
 const cancelledRoutes = require("./routes/cancelledTurnsRoutes.js");
 const mercadoPagoRoutes = require("./routes/mercadoPagoRoutes.js");
+const pushNotificationsRoutes = require("./routes/pushNotificationsRoutes.js");
 
 const router = Router(); // ejecuta Router de express
 
@@ -17,5 +18,6 @@ router.use("/schedule", scheduleRoutes);
 router.use("/personalization", personalizationRoutes);
 router.use("/cancelledturns", cancelledRoutes);
 router.use("/mercadopago", mercadoPagoRoutes);
+router.use("/pushnotifications", pushNotificationsRoutes);
 
 module.exports = router;

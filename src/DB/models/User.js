@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const UserSchema = new Schema(
   {
-    name: { 
+    name: {
       type: String,
       required: false,
     },
@@ -35,7 +35,15 @@ const UserSchema = new Schema(
     phone: {
       type: String,
       required: false,
-    }
+    },
+    pushToken: {
+      type: String,
+      required: false,
+    },
+    notifications: {
+      type: Boolean,
+      required: false,
+    },
   },
   {
     timestamps: true,

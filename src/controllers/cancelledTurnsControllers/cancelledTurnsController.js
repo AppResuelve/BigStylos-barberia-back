@@ -4,7 +4,12 @@ const CancelledTurns = require("../../DB/models/CancelledTurns");
 const cancelledTurnsController = async (emailWorker, month, day) => {
 
   try {
-    const turns = await CancelledTurns.find({ email: emailWorker, month, day});
+    const turns = await CancelledTurns.find({
+      emailWorker: emailWorker,
+      month,
+      day,
+    });
+console.log(turns);
 
     return turns;
   } catch (error) {

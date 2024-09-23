@@ -1,9 +1,9 @@
 const updateUserTokenController = require("../../controllers/pushNotificationsControllers/updateUserTokenController");
 
 const updateUserTokenHandler = async (req, res) => {
-  const { token, userId } = req.body;
+  const { token, userEmail } = req.body;
   try {
-    const updatedUserToken = await updateUserTokenController(token, userId);
+    const updatedUserToken = await updateUserTokenController(token, userEmail);
     res.status(200).json(updatedUserToken);
   } catch (error) {
     console.error(error);

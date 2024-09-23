@@ -53,15 +53,4 @@ const sendPushNotificationHandler = async (req, res) => {
   }
 };
 
-// // Ejemplo de cómo llamar a la función
-// const deviceToken = "AQUI_EL_TOKEN_DEL_DISPOSITIVO";
-// const messageData = {
-//   title: "Nuevo turno agendado",
-//   body: "Tu turno ha sido confirmado para el 25 de Septiembre",
-//   key1: "valor adicional 1",
-//   key2: "valor adicional 2",
-// };
-
-// // Llamada a la función para enviar la notificación
-// sendPushNotification(deviceToken, messageData);
 module.exports = sendPushNotificationHandler;

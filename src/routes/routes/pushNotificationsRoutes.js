@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const sendPushNotificationHandler = require("../../handlers/pushNotificationsHandlers/sendPushNotificationHandler");
 const updateUserTokenHandler = require("../../handlers/pushNotificationsHandlers/putUserTokenHandler");
+const sendPushNotificationHandler = require("../../handlers/pushNotificationsHandlers/sendPushNotificationHandler");
 
 const router = Router();
 router.put("/updateusertoken", updateUserTokenHandler);

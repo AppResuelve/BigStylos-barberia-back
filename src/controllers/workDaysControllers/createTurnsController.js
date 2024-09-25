@@ -2,7 +2,6 @@ const WorkDay = require("../../DB/models/WorkDay");
 const corroborate = require("../../helpers/corroborateDisponibility");
 
 const createTurnController = async (arrayItems) => {
-
   const uno = arrayItems[0];
   const dos = arrayItems[1];
   const tres = arrayItems[2];
@@ -75,17 +74,14 @@ const createTurnController = async (arrayItems) => {
 
         let updatedDocuments = selectedDocuments.map((doc) => {
           let updatedTime = [...doc.time];
-          let end = worker.map((wrk) => {
-            if (wrk.email === doc.email) {
-              return wrk.end;
-            }
-          });
+          let end = worker.find((wrk) => {
+            return wrk.email === doc.email; // Condición para encontrar el email coincidente
+          })?.end; // Usamos optional chaining para devolver el valor de `end`, SI NO SE UTILIZA, DEVOLVERÍA EL OBJ QUE HACE MATCH.
 
-          for (let i = ini; i <= end[0]; i++) {
-
+          for (let i = ini; i <= end; i++) {
             updatedTime[i].applicant = user;
             updatedTime[i].ini = ini;
-            updatedTime[i].end = end[0];
+            updatedTime[i].end = end;
             updatedTime[i].requiredService = service;
           }
 
@@ -149,10 +145,10 @@ const createTurnController = async (arrayItems) => {
       if (newDos) prepareBulkOperations(newDos);
       if (newTres) prepareBulkOperations(newTres);
 
-
       if (bulkOperations.length > 0) {
-        await WorkDay.bulkWrite(bulkOperations);
+      await WorkDay.bulkWrite(bulkOperations);
       }
+
       let success = { success: arrayItems };
       return success;
     }

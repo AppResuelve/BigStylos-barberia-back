@@ -104,6 +104,7 @@ const updateNoWorkCancelTurnController = async (noWorkDays) => {
     }
 
     for (const date of datesProcessed) {
+      console.log('entrando en datesProccesed')
       await WorkDay.deleteMany({ month: date.month, day: date.day });
     }
 

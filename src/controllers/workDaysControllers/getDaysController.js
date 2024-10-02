@@ -14,13 +14,18 @@ const getDaysController = async () => {
       }
 
       if (!result[month][day]) {
-        result[month][day] = {};
+        // Si es la primera vez que vemos este day, inicializamos el valor
+        result[month][day] = {
+          turn: false, // Valor inicial como false, hasta que encontremos un true
+          time: []
+        };
       }
 
-      result[month][day] = {
-        turn,
-        time
-      };
+      // Si ya encontramos un turn en true, no lo sobrescribimos con false
+      result[month][day].turn = result[month][day].turn || turn;
+
+      // Agregamos los valores de time (en este caso puedes decidir si lo quieres sobrescribir o combinar los arrays)
+      result[month][day].time = time;
     });
 
     return result;

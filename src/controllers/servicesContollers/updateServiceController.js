@@ -3,8 +3,7 @@ const User = require("../../DB/models/User");
 
 const updateServiceController = async (
   category,
-  prev,
-  current,
+  service,
   price,
   sing,
   type
@@ -13,8 +12,7 @@ const updateServiceController = async (
     var updatedFlag = false;
 
     const categoryLowerCase = category.toLowerCase();
-    const prevLowerCase = prev.toLowerCase();
-    const currentLowerCase = current.toLowerCase();
+    const serviceLowerCase = service.toLowerCase();
 
     const servicesDoc = await Services.findOne({});
 
@@ -34,19 +32,20 @@ const updateServiceController = async (
         Object.keys(servicesDoc.services).length > 0
       ) {
         if (servicesDoc.services[categoryLowerCase]) {
-          if (!servicesDoc.services[categoryLowerCase][prevLowerCase]) {
+          if (!servicesDoc.services[categoryLowerCase][serviceLowerCase]) {
             throw new Error(
               "El servicio que intentas editar no existe en base de datos."
             );
           } else {
-            servicesDoc.services[categoryLowerCase][currentLowerCase] = {
+            servicesDoc.services[categoryLowerCase][serviceLowerCase] = {
               price,
               sing,
               type,
-              img: servicesDoc.services[categoryLowerCase][prevLowerCase].img,
+              img: servicesDoc.services[categoryLowerCase][serviceLowerCase]
+                .img,
             };
-            if (prevLowerCase != currentLowerCase) {
-              delete servicesDoc.services[categoryLowerCase][prevLowerCase];
+            if (serviceLowerCase != serviceLowerCase) {
+              delete servicesDoc.services[categoryLowerCase][serviceLowerCase];
             }
             updatedFlag = true;
           }
@@ -61,10 +60,10 @@ const updateServiceController = async (
     if (updatedFlag) {
       var users = await User.find();
       for (var user of users) {
-        if (user.services[prevLowerCase]) {
-          if (currentLowerCase !== prevLowerCase) {
-            user.services[currentLowerCase] = user.services[prevLowerCase];
-            delete user.services[prevLowerCase];
+        if (user.services[serviceLowerCase]) {
+          if (serviceLowerCase !== serviceLowerCase) {
+            user.services[serviceLowerCase] = user.services[serviceLowerCase];
+            delete user.services[serviceLowerCase];
             user.markModified("services");
             await user.save();
           }

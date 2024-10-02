@@ -4,6 +4,8 @@ const CancelledTurns = require("../../DB/models/CancelledTurns");
 const Schedule = require("../../DB/models/Schedule");
 
 const updateNoWorkCancelTurnController = async (noWorkDays) => {
+  //  { '10': { '23': {} } } ------noWorkDays
+
   try {
     let daysToCancel = [];
     let workdaysToCancel = [];
@@ -21,6 +23,7 @@ const updateNoWorkCancelTurnController = async (noWorkDays) => {
             };
 
             const workdays = await WorkDay.find(dateObject);
+            console.log(workdays, 'esto trae con find--------')
             datesProcessed.push(dateObject);
 
             if (workdays.length > 0) {
@@ -104,6 +107,7 @@ const updateNoWorkCancelTurnController = async (noWorkDays) => {
     }
 
     for (const date of datesProcessed) {
+      console.log('entrando en datesProccesed')
       await WorkDay.deleteMany({ month: date.month, day: date.day });
     }
 

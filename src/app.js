@@ -16,7 +16,7 @@ server.use(morgan("dev"));
 //   credentials: true, // Si necesitas enviar cookies, tokens, etc.
 // };
 
-server.use(cors());
+server.use(cors({ origin: '*' }));
 
 server.use("/", routes);
 

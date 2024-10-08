@@ -10,16 +10,14 @@ server.use(express.json());
 server.use(morgan("dev"));
 
 // Configuración de CORS
-const corsOptions = {
-  origin: "https://tengoturno.up.railway.app", // Dominio del frontend
-  methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
-  credentials: true, // Si necesitas enviar cookies o tokens
-};
+// const corsOptions = {
+//   origin: "https://tengoturno.up.railway.app", // Reemplaza con tu dominio
+//   methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
+//   credentials: true, // Si necesitas enviar cookies, tokens, etc.
+// };
 
-// Aplica las opciones de CORS
-server.use(cors(corsOptions));
+server.use(cors());
 
-// Rutas de la API
 server.use("/", routes);
 
 module.exports = server;

@@ -8,8 +8,7 @@ const countCancelledController = async (emailWorker) => {
     const currentDay = currentDate.getDate()
 
     try {
-        const turns = await CancelledTurns.find({ email: emailWorker });
-
+        const turns = await CancelledTurns.find({ emailWorker });
         var month1 = [];
         var month2 = [];
 
@@ -24,14 +23,12 @@ const countCancelledController = async (emailWorker) => {
 
         month1.sort((a, b) => a.day - b.day);
         month2.sort((a, b) => a.day - b.day);
-
         var result1 = month1.map(element => `${element.day}/${element.month}`);
         var result2 = month2.map(element => `${element.day}/${element.month}`);
 
         var ultraResult = result1.concat(result2);
 
         var uniqueResult = Array.from(new Set(ultraResult));
-
         return uniqueResult;
     } catch (error) {
         console.error("Error al obtener días laborales:", error);
